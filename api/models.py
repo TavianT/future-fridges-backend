@@ -28,4 +28,32 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+class Supplier(models.Model):
+    name = models.CharField(max_length=255, blank=False)
+    address = models.CharField(max_length=255, blank=False)
+    contanct_number = models.CharField(max_length=15, blank=False)
+    email = models.EmailField(verbose_name='email address', unique=True)
+
+    def __str__(self):
+        return self.name
+
+#Item model
+class Item(models.Model):
+    name = models.CharField(max_length=255)
+    weight = models.FloatField()
+    barcode = models.CharField(max_length=100)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+class FridgeContent(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    introduction_date = models.DateTimeField(default=timezone.now)
+    expiration_date = models.DateTimeField()
+    last_inserted_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+
 
