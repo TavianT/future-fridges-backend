@@ -21,12 +21,13 @@ def login(request):
         return HttpResponse(status=status.HTTP_200_OK)
     else:
         return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
-    return HttpResponse(status-status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return HttpResponse(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 def logout(request):
     logout(request)
-    return HttpResponse(status=status.HTTP_200_OK);
+    return HttpResponse(status=status.HTTP_200_OK)
+
 
 '''User endpoint functions'''
 #Get all users who are not admins
