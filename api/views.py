@@ -45,7 +45,7 @@ def singleUser(request, pk):
             return UserController.getSingleUser(pk)
         # Update included fields
         if request.method == 'PUT':
-            return ?UserController.updateSingleUser(request,pk)
+            return UserController.updateSingleUser(request,pk)
     return error
 
 '''Fridge Content functions'''
@@ -53,3 +53,23 @@ def singleUser(request, pk):
 @api_view(['GET'])
 def allFridgeContent(request):
     return FridgeContentController.getAllFridgeContent()
+
+@api_view(['POST'])
+def singleFridgeContent(request,pk):
+    error = FridgeContentController.singleFridgeContentCreateCheck(pk)
+    if error is None:
+        if request.method == 'POST':
+            return None #stub
+            
+
+'''Item functions'''
+@api_view(['POST']) # Might need to change to a GET?
+def singleItemFromBarcode(request):
+    barcode = request.data['barcode']
+    return ItemController.getItemFromBarcode(barcode)
+
+@api_view(['GET','POST'])
+def singleItem(request,pk):
+    if request.method == 'POST':
+        return ItemController.createItem(request)
+
