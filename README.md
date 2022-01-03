@@ -25,3 +25,7 @@ Python version 3.8 is needed to run this without any issues (3.9 might work but 
 `python manage.py createsuperuser` (Input email, name and password)
 
 `python manage.py runserver`
+
+## Test data
+
+To add the test data to the database the database file will need to be create see above migrate command, then run `sqlite3 db.sqlite3 < sqlite_test_scripts/SQL_FILE`
