@@ -31,7 +31,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Supplier(models.Model):
     name = models.CharField(max_length=255, blank=False)
     address = models.CharField(max_length=255, blank=False)
-    contanct_number = models.CharField(max_length=15, blank=False)
+    contact_number = models.CharField(max_length=15, blank=False)
     email = models.EmailField(verbose_name='email address', unique=True)
 
     def __str__(self):
