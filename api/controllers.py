@@ -57,6 +57,11 @@ class FridgeContentController():
 
 
 class ItemController():
+    #get all items
+    def getAllItems():
+        items = Item.objects.all()
+        serializer = FridgeContentSerializer(items, many=True)
+        return Response(serializer.data)
     #get item from barcode
     def getItemFromBarcode(barcode):
         try:

@@ -8,9 +8,10 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     #Item paths
+    path('items/', views.allItems, name="items"),
     path('item/<str:pk>/', views.singleItem, name='item'),
-    path('item-barcode', views.singleItemFromBarcode, name='item_from_barcode'),
+    path('item-barcode/', views.singleItemFromBarcode, name='item_from_barcode'),
     #Fridge content paths
-    path('fridge-contents', views.allFridgeContent, name='fridge_contents'),
-    path('fridge-content', views.singleFridgeContent, name='fridge_content'),
+    path('fridge-contents/', views.allFridgeContent, name='fridge_contents'),
+    path('fridge-content/', views.singleFridgeContent, name='fridge_content'),
 ]

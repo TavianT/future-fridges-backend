@@ -67,6 +67,9 @@ def singleFridgeContent(request,pk):
             
 
 '''Item functions'''
+@api_view(['GET'])
+def allItems(request):
+    return ItemController.getAllItems()
 #Get contents of item model from a barcode
 @api_view(['GET'])
 def singleItemFromBarcode(request):
