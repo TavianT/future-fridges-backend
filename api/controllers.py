@@ -1,14 +1,14 @@
-from django.http.response import HttpResponse
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.contrib.auth import authenticate, login, logout
-from rest_framework import serializers
+from django.http.response import HttpResponse, JsonResponse
 from rest_framework import status
 
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import UserSerializer,FridgeContentSerializer,ItemSerializer
 from .models import User,FridgeContent,Item
+
+from datetime import date, datetime
+
+import os
+import json
 
 class UserController():
     def getAllUsers():
@@ -77,4 +77,30 @@ class ItemController():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ReportController():
+    #REPORT_PATH = "./reports/"
+    def getAllReportInfo():
+        all_report_info = []
+        directory = os.fsencode("reports/")
+        for file in os.listdir(directory):
+            filename = os.fsdecode(file)
+            if filename.endswith(".xlsx"):
+                #get full path of file
+                file_path = os.path.join("reports/", filename)
+                file_size = os.path.getsize(file_path)
+                #get creation time as timestamp then convert to dd-MM-yy
+                creation_date = os.path.getmtime(file_path)
+                creation_date = datetime.fromtimestamp(creation_date).strftime('%d-%m-%Y')
+                report_info = {
+                    "name": filename,
+                    "size": file_size,
+                    "creation_date": creation_date
+                }
+                all_report_info.append(report_info)
+        #convert all_report_info into json array object
+        all_report_info = json.dumps({'reports_info': all_report_info}, indent=4)
+        return HttpResponse(all_report_info, content_type="application/json")
+
+
     

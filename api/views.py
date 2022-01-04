@@ -1,15 +1,9 @@
 from django.http.response import HttpResponse
-from django.shortcuts import render
-from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
-from rest_framework import serializers
 from rest_framework import status
 
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .serializers import UserSerializer
-from .models import User,FridgeContent,Item
-from .controllers import UserController, FridgeContentController, ItemController
+from .controllers import ReportController, UserController, FridgeContentController, ItemController
 
 '''Auth function'''
 #Used to login to the app via the backend, user information is saved as an instace and can be accessed without needing to pass any information about the current user
@@ -82,3 +76,8 @@ def singleItem(request,pk):
         #create new item
         return ItemController.createItem(request)
 
+'''Health and safety reports'''
+#Get information about all reports e.g. the creation date, size, name
+@api_view(['GET'])
+def allReportsInfo(request):
+    return ReportController.getAllReportInfo()

@@ -14,4 +14,6 @@ urlpatterns = [
     #Fridge content paths
     path('fridge-contents/', views.allFridgeContent, name='fridge_contents'),
     path('fridge-content/', views.singleFridgeContent, name='fridge_content'),
+    #Report paths
+    path('all-reports/', views.allReportsInfo, name='all-reports')
 ]
