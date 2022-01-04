@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework import status
 
 from rest_framework.decorators import api_view
+from .reports import HealthAndSafetyReport
 from .controllers import ReportController, UserController, FridgeContentController, ItemController
 
 '''Auth function'''
@@ -81,3 +82,7 @@ def singleItem(request,pk):
 @api_view(['GET'])
 def allReportsInfo(request):
     return ReportController.getAllReportInfo()
+
+@api_view(['GET'])
+def generateReport(request):
+    return ReportController.getNewReport()

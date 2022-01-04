@@ -2,6 +2,8 @@ from django.http.response import HttpResponse, JsonResponse
 from rest_framework import status
 
 from rest_framework.response import Response
+
+from .reports import HealthAndSafetyReport
 from .serializers import UserSerializer,FridgeContentSerializer,ItemSerializer
 from .models import User,FridgeContent,Item
 
@@ -101,6 +103,9 @@ class ReportController():
         #convert all_report_info into json array object
         all_report_info = json.dumps({'reports_info': all_report_info}, indent=4)
         return HttpResponse(all_report_info, content_type="application/json")
+    
+    def getNewReport():
+        return HealthAndSafetyReport.generateReport()
 
 
     

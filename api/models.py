@@ -26,7 +26,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.email
+        return self.name
 
 class Supplier(models.Model):
     name = models.CharField(max_length=255, blank=False)
@@ -49,9 +49,9 @@ class Item(models.Model):
 
 class FridgeContent(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    introduction_date = models.DateTimeField(default=timezone.now)
-    expiration_date = models.DateTimeField()
+    quantity = models.FloatField()
+    introduction_date = models.DateField(default=timezone.now)
+    expiration_date = models.DateField()
     last_inserted_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
