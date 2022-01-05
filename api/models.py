@@ -56,7 +56,7 @@ class FridgeContent(models.Model):
 
 class Door(models.Model):
     name = models.CharField(max_length=10)
-    lock_status = models.BooleanField()
+    door_locked = models.BooleanField()
 
     def __str__(self):
         return self.name
