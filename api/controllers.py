@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse, JsonResponse, FileResponse
+from django.http.response import HttpResponse, JsonResponse
 from rest_framework import status
 
 from rest_framework.response import Response
@@ -36,7 +36,8 @@ class UserController():
 
     #update a single user with primary key pk with the contents of requests
     def updateSingleUser(request,pk):
-        serializer = UserSerializer(instance=user, data=request.data)
+        user = User.objects.get(id=pk)
+        serializer = UserSerializer(instance=user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -57,6 +58,24 @@ class FridgeContentController():
             return HttpResponse(status=status.HTTP_404_NOT_FOUND) # Return 404
         return None
 
+    def createFridgeContent(request):
+        serializer = FridgeContentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def updateQuantity(request,pk):
+        content = FridgeContent.objects.get(id=pk)
+        # TODO: get current quantity here
+        serializer = FridgeContentSerializer(instance=content, data=request.data, partial=True)
+        serializer
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data) #TODO: return current quantity
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 class ItemController():
     #get all items
@@ -74,7 +93,7 @@ class ItemController():
             return HttpResponse(status=status.HTTP_404_NOT_FOUND)
     #create item from request
     def createItem(request):
-        serializer = UserSerializer(data=request.data)
+        serializer = ItemSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

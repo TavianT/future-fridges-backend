@@ -1,5 +1,6 @@
 from django.http.response import HttpResponse
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 
 from rest_framework.decorators import api_view
@@ -8,8 +9,8 @@ from .controllers import ReportController, UserController, FridgeContentControll
 
 '''Auth function'''
 #Used to login to the app via the backend, user information is saved as an instace and can be accessed without needing to pass any information about the current user
-@api_view(['POST'])
-def login(request):
+@csrf_exempt
+def userLogin(request):
     #Takes data from form via POST request
     email = request.POST['email']
     password = request.POST['password']
@@ -22,8 +23,8 @@ def login(request):
     return HttpResponse(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 #Logs the user out and clears instance
-@api_view(['POST'])
-def logout(request):
+@csrf_exempt
+def userLogout(request):
     logout(request)
     return HttpResponse(status=status.HTTP_200_OK)
 
@@ -58,7 +59,18 @@ def singleFridgeContent(request,pk):
    # error = FridgeContentController.singleFridgeContentCreateCheck(pk) #
     #if error is None:  #commenting out for now
     if request.method == 'POST':
-        return None #stub
+        return FridgeContentController.createFridgeContent(request)
+
+@api_view(['PUT'])
+def updateContentQuantity(request,pk):
+    error = FridgeContentController.singleFridgeContentCreateCheck(pk)
+    if error is None:
+        response = FridgeContentController.updateQuantity(request,pk)
+        if response.status_code > 299: #check if error code is 300 redirect, 400 user error or 500 server error
+            return response
+        #TODO: implement activity log
+        return response
+    return error
             
 
 '''Item functions'''
