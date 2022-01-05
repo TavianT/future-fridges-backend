@@ -14,9 +14,7 @@ Python version 3.8 is needed to run this without any issues (3.9 might work but 
 
 #### Install dependancies
 
-`pip install django`
-
-`pip install djangorestframework`
+`pip install -r requirements.txt`
 
 #### Start server
 
