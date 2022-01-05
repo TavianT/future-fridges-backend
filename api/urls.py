@@ -17,4 +17,5 @@ urlpatterns = [
     #Report paths
     path('all-reports/', views.allReportsInfo, name='all-reports'),
     path('generate-report/', views.generateReport, name='generate-report'),
+    path('download-report/<str:filename>/', views.returnReport, name='donwload-report'),
 ]

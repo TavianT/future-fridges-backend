@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse, JsonResponse
+from django.http.response import HttpResponse, JsonResponse, FileResponse
 from rest_framework import status
 
 from rest_framework.response import Response
@@ -106,6 +106,16 @@ class ReportController():
     
     def getNewReport():
         return HealthAndSafetyReport.generateReport()
+    
+    def getReport(filename):
+        file_path = os.path.join("reports/", filename)
+        if os.path.isfile(file_path):
+            with open(file_path, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+            return response
+        else:
+            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
 
     
