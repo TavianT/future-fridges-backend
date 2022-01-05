@@ -86,3 +86,7 @@ def allReportsInfo(request):
 @api_view(['GET'])
 def generateReport(request):
     return ReportController.getNewReport()
+
+@api_view(['GET'])
+def returnReport(request,filename):
+    return ReportController.getReport(filename)
