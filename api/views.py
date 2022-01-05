@@ -1,11 +1,12 @@
-from django.http.response import HttpResponse
+import json
+from django.http.response import HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 
 from rest_framework.decorators import api_view
-from .reports import HealthAndSafetyReport
 from .controllers import ReportController, UserController, FridgeContentController, ItemController
+from .serializers import UserSerializer
 
 '''Auth function'''
 #Used to login to the app via the backend, user information is saved as an instace and can be accessed without needing to pass any information about the current user
@@ -17,7 +18,8 @@ def userLogin(request):
     user = authenticate(request, username=email, password=password)
     if user is not None: #if login successful
         login(request, user)
-        return HttpResponse(status=status.HTTP_200_OK) #return 200 TODO: might need to change status code
+        serializer = UserSerializer(user, many=False)
+        return JsonResponse(serializer.data)
     else:
         return HttpResponse(status=status.HTTP_401_UNAUTHORIZED) #return 401
     return HttpResponse(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
