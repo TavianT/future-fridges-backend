@@ -29,3 +29,11 @@ Python version 3.8 is needed to run this without any issues (3.9 might work but 
 ## Test data
 
 To add the test data to the database the database file will need to be create see above migrate command, then run `sqlite3 db.sqlite3 < sqlite_test_scripts/SQL_FILE`
+
+The scripts provided should be ran in this order for the best result:
+
+- create_suppliers
+
+- create_items
+
+- create_fridge_contents
