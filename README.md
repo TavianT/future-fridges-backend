@@ -26,6 +26,12 @@ Python version 3.8 is needed to run this without any issues (3.9 might work but 
 
 `python manage.py runserver`
 
+## Create users
+
+To create regular users once the server is up and running go to http://localhost:8000/admin from there log in with the super user created above. Then click on add user as seen on the image below:
+
+![img](https://i.imgur.com/ztI5XvA.png) 
+
 ## Test data
 
 To add the test data to the database the database file will need to be create see above migrate command, then run `sqlite3 db.sqlite3 < sqlite_test_scripts/SQL_FILE`
