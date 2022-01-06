@@ -8,9 +8,11 @@ from .serializers import UserSerializer,FridgeContentSerializer,ItemSerializer, 
 from .models import Door, User,FridgeContent,Item
 
 from datetime import date, datetime
+from time import sleep
 
 import os
 import json
+import threading
 
 class UserController():
     def getAllUsers():
@@ -138,6 +140,21 @@ class ReportController():
 class DoorController():
     FRONT_DOOR = "Front Door"
     BACK_DOOR = "Back Door"
+
+    def autoLockDoor(name):
+        print('going to sleep')
+        sleep(31)
+        print('waking up to start fridge door lock')
+        status = -1
+        while status != 200:  
+            if name == DoorController.FRONT_DOOR:
+                response = DoorController.lockFrontDoor()
+                status = response.status_code
+            else:
+                response = DoorController.lockBackDoor()
+                status = response.status_code
+        print(f'auto locked {name}')
+
     def getDoorStatus(name):
         door = Door.objects.get(name=name)
         print(f'door id: {door.id}')
@@ -153,27 +170,27 @@ class DoorController():
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def unlockFrontDoor(request):
+    def unlockFrontDoor():
         front_door_locked = DoorController.getDoorStatus(DoorController.FRONT_DOOR)
         back_door_locked = DoorController.getDoorStatus(DoorController.BACK_DOOR)
         if front_door_locked and back_door_locked:
             return DoorController.setDoorStatus(DoorController.FRONT_DOOR, False)
         return HttpResponse(status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
 
-    def unlockBackDoor(request):
+    def unlockBackDoor():
         front_door_locked = DoorController.getDoorStatus(DoorController.FRONT_DOOR)
         back_door_locked = DoorController.getDoorStatus(DoorController.BACK_DOOR)
         if front_door_locked and back_door_locked:
            return DoorController.setDoorStatus(DoorController.BACK_DOOR, False)
         return HttpResponse(status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
 
-    def lockFrontDoor(request):
+    def lockFrontDoor():
         front_door_locked = DoorController.getDoorStatus(DoorController.FRONT_DOOR)
         if not front_door_locked:
             return DoorController.setDoorStatus(DoorController.FRONT_DOOR, True)
         return HttpResponse(status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
 
-    def lockBackDoor(request):
+    def lockBackDoor():
         back_door_locked = DoorController.getDoorStatus(DoorController.BACK_DOOR)
         if not back_door_locked:
             return DoorController.setDoorStatus(DoorController.BACK_DOOR, True)

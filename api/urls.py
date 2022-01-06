@@ -24,3 +24,5 @@ urlpatterns = [
     path('unlock-door/', views.unlockDoor, name="unlock-door"),
     path('lock-door/', views.lockDoor, name="lock-door"),
 ]
+
+#TODO: Every monday reorder empty items

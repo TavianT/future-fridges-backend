@@ -1,4 +1,5 @@
-import json
+import re
+import threading
 from django.http.response import HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
@@ -110,12 +111,20 @@ def returnReport(request,filename):
 def unlockDoor(request):
     # if delivery driver unlock back door
     if request.user.fridge_access:
+        response = None
         if request.user.role == 'DD':
             print(f'unlocking back door')
-            return DoorController.unlockBackDoor(request)
+            response = DoorController.unlockBackDoor()
+            if response.status_code == 200:
+                t = threading.Thread(target=DoorController.autoLockDoor,args=[DoorController.BACK_DOOR], daemon=True)
+                t.start()
         else:
             print(f'unlocking front door')
-            return DoorController.unlockFrontDoor(request)
+            response = DoorController.unlockFrontDoor()
+            if response.status_code == 200:
+                t = threading.Thread(target=DoorController.autoLockDoor,args=[DoorController.FRONT_DOOR], daemon=True)
+                t.start()
+        return response
     return HttpResponse(status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['POST'])
@@ -123,7 +132,7 @@ def lockDoor(request):
     # if delivery driver lock back door
     if request.user.fridge_access:
         if request.user.role == 'DD':
-            return DoorController.lockBackDoor(request)
+            return DoorController.lockBackDoor()
         else:
-            return DoorController.lockFrontDoor(request)
+            return DoorController.lockFrontDoor()
     return HttpResponse(status=status.HTTP_403_FORBIDDEN)
