@@ -1,3 +1,4 @@
+from os import name
 from . import views
 from django.urls import path
 urlpatterns = [
@@ -19,4 +20,7 @@ urlpatterns = [
     path('all-reports/', views.allReportsInfo, name='all-reports'),
     path('generate-report/', views.generateReport, name='generate-report'),
     path('download-report/<str:filename>/', views.returnReport, name='donwload-report'),
+    #Door paths
+    path('unlock-door/', views.unlockDoor, name="unlock-door"),
+    path('lock-door/', views.lockDoor, name="lock-door"),
 ]

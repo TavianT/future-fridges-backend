@@ -111,17 +111,19 @@ def unlockDoor(request):
     # if delivery driver unlock back door
     if request.user.fridge_access:
         if request.user.role == 'DD':
-            DoorController.unlockBackDoor(request)
+            print(f'unlocking back door')
+            return DoorController.unlockBackDoor(request)
         else:
-            DoorController.unlockFrontDoor(request)
-    return HttpResponse(status.HTTP_403_FORBIDDEN)
+            print(f'unlocking front door')
+            return DoorController.unlockFrontDoor(request)
+    return HttpResponse(status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['POST'])
 def lockDoor(request):
     # if delivery driver lock back door
     if request.user.fridge_access:
         if request.user.role == 'DD':
-            DoorController.lockBackDoor(request)
+            return DoorController.lockBackDoor(request)
         else:
-            DoorController.lockFrontDoor(request)
-    return HttpResponse(status.HTTP_403_FORBIDDEN)
+            return DoorController.lockFrontDoor(request)
+    return HttpResponse(status=status.HTTP_403_FORBIDDEN)
