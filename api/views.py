@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 
 from rest_framework.decorators import api_view
-from .controllers import ReportController, UserController, FridgeContentController, ItemController
+from .controllers import DoorController, ReportController, UserController, FridgeContentController, ItemController
 from .serializers import UserSerializer
 
 '''Auth function'''
@@ -104,3 +104,26 @@ def generateReport(request):
 @api_view(['GET'])
 def returnReport(request,filename):
     return ReportController.getReport(filename)
+
+'''Front/Back door unlocking/locking'''
+@api_view(['POST'])
+def unlockDoor(request):
+    # if delivery driver unlock back door
+    if request.user.fridge_access:
+        if request.user.role == 'DD':
+            print(f'unlocking back door')
+            return DoorController.unlockBackDoor(request)
+        else:
+            print(f'unlocking front door')
+            return DoorController.unlockFrontDoor(request)
+    return HttpResponse(status=status.HTTP_403_FORBIDDEN)
+
+@api_view(['POST'])
+def lockDoor(request):
+    # if delivery driver lock back door
+    if request.user.fridge_access:
+        if request.user.role == 'DD':
+            return DoorController.lockBackDoor(request)
+        else:
+            return DoorController.lockFrontDoor(request)
+    return HttpResponse(status=status.HTTP_403_FORBIDDEN)

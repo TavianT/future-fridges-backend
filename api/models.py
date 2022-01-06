@@ -54,6 +54,13 @@ class FridgeContent(models.Model):
     expiration_date = models.DateField()
     last_inserted_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
+class Door(models.Model):
+    name = models.CharField(max_length=10)
+    door_locked = models.BooleanField()
+
+    def __str__(self):
+        return self.name
+
 
 
 
