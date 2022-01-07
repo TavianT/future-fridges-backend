@@ -6,7 +6,9 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 
 from rest_framework.decorators import api_view
-from .controllers import DoorController, ReportController, UserController, FridgeContentController, ItemController
+
+from api.logging import ActivityLog
+from .controllers import ActivityLogController, DoorController, ReportController, UserController, FridgeContentController, ItemController
 from .serializers import UserSerializer
 
 '''Auth function'''
@@ -57,22 +59,22 @@ def singleUser(request, pk):
 def allFridgeContent(request):
     return FridgeContentController.getAllFridgeContent()
 
-@api_view(['POST'])
+'''@api_view(['POST'])
 def singleFridgeContent(request,pk):
    # error = FridgeContentController.singleFridgeContentCreateCheck(pk) #
     #if error is None:  #commenting out for now
     if request.method == 'POST':
-        return FridgeContentController.createFridgeContent(request)
+        return FridgeContentController.createFridgeContent(request)'''
+
+@api_view(['POST'])
+def createFridgeContent(request):
+    return FridgeContentController.createFridgeContent(request)
 
 @api_view(['PUT'])
 def updateContentQuantity(request,pk):
     error = FridgeContentController.singleFridgeContentCreateCheck(pk)
     if error is None:
-        response = FridgeContentController.updateQuantity(request,pk)
-        if response.status_code > 299: #check if error code is 300 redirect, 400 user error or 500 server error
-            return response
-        #TODO: implement activity log
-        return response
+        return FridgeContentController.updateQuantity(request,pk)
     return error
             
 
@@ -86,11 +88,15 @@ def singleItemFromBarcode(request):
     barcode = request.data['barcode']
     return ItemController.getItemFromBarcode(barcode)
 
-@api_view(['GET','POST'])
+'''@api_view(['GET','POST'])
 def singleItem(request,pk):
     if request.method == 'POST':
         #create new item
-        return ItemController.createItem(request)
+        return ItemController.createItem(request) '''
+
+@api_view(['POST'])
+def createItem(request):
+    return ItemController.createItem(request)
 
 '''Health and safety reports'''
 #Get information about all reports e.g. the creation date, size, name
@@ -136,3 +142,13 @@ def lockDoor(request):
         else:
             return DoorController.lockFrontDoor()
     return HttpResponse(status=status.HTTP_403_FORBIDDEN)
+
+
+'''Activity log'''
+api_view(['GET'])
+def recentActivityLogs(request):
+    return ActivityLogController.getLatestLogs()
+
+api_view(['GET'])
+def returnLog(request, filename):
+     return ActivityLogController.downloadLog(filename)

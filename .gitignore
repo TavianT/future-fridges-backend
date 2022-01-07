@@ -133,3 +133,6 @@ db.sqlite3
 
 #health and safety reports
 reports/health_and_safety_report.*
+
+#logs
+logs/activity*

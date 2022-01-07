@@ -3,11 +3,13 @@ from rest_framework import status
 
 from rest_framework.response import Response
 
+from api.logging import ActivityLog
+
 from .reports import HealthAndSafetyReport
 from .serializers import UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer
 from .models import Door, User,FridgeContent,Item
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from time import sleep
 
 import os
@@ -64,15 +66,21 @@ class FridgeContentController():
         serializer = FridgeContentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            content = FridgeContent.objects.get(id=serializer.data.get("id"))
+            t = threading.Thread(target=ActivityLog.writeNewFridgeContentActivityToLog,args=[content], daemon=True)
+            t.start()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def updateQuantity(request,pk):
         content = FridgeContent.objects.get(id=pk)
+        old_quantity = content.quantity
         # TODO: get current quantity here
         serializer = FridgeContentSerializer(instance=content, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            t = threading.Thread(target=ActivityLog.writeUpdateFridgeContentActivityToLog,args=[content, old_quantity], daemon=True)
+            t.start()
             return Response(serializer.data) #TODO: return current quantity
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -82,7 +90,7 @@ class ItemController():
     #get all items
     def getAllItems():
         items = Item.objects.all()
-        serializer = FridgeContentSerializer(items, many=True)
+        serializer = ItemSerializer(items, many=True)
         return Response(serializer.data)
     #get item from barcode
     def getItemFromBarcode(barcode):
@@ -195,4 +203,35 @@ class DoorController():
         if not back_door_locked:
             return DoorController.setDoorStatus(DoorController.BACK_DOOR, True)
         return HttpResponse(status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
+
+class ActivityLogController():
+    def getLatestLogs():
+        logs = []
+        week_ago = datetime.now() - timedelta(days=7)
+        directory = os.fsencode(ActivityLog.LOG_PATH)
+        for file in os.listdir(directory):
+            filename = os.fsdecode(file)
+            file_path = os.path.join(ActivityLog.LOG_PATH, filename)
+            creation_date = datetime.fromtimestamp(os.path.getmtime(file_path))
+            if creation_date > week_ago:
+                creation_date = creation_date.strftime('%d-%m-%Y')
+                log_info = {
+                    "name": filename,
+                    "creation_date": creation_date
+                }
+                logs.append(log_info)
+        
+        logs = json.dumps({'logs': logs}, indent=4)
+        return HttpResponse(logs, content_type="application/json")
+
+    def downloadLog(filename):
+        file_path = os.path.join(ActivityLog.LOG_PATH, filename)
+        if os.path.isfile(file_path):
+            with open(file_path, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type = "text/plain")
+            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+            return response
+        else:
+            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
 
