@@ -50,7 +50,7 @@ class Item(models.Model):
 class FridgeContent(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.FloatField()
-    introduction_date = models.DateField(default=timezone.now)
+    introduction_date = models.DateField(auto_now_add=True)
     expiration_date = models.DateField()
     last_inserted_by = models.ForeignKey(User, on_delete=models.CASCADE)
 

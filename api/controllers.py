@@ -3,6 +3,8 @@ from rest_framework import status
 
 from rest_framework.response import Response
 
+from api.logging import ActivityLog
+
 from .reports import HealthAndSafetyReport
 from .serializers import UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer
 from .models import Door, User,FridgeContent,Item
@@ -64,15 +66,21 @@ class FridgeContentController():
         serializer = FridgeContentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            content = FridgeContent.objects.get(id=serializer.data.get("id"))
+            t = threading.Thread(target=ActivityLog.writeNewFridgeContentActivityToLog,args=[content], daemon=True)
+            t.start()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def updateQuantity(request,pk):
         content = FridgeContent.objects.get(id=pk)
+        old_quantity = content.quantity
         # TODO: get current quantity here
         serializer = FridgeContentSerializer(instance=content, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            t = threading.Thread(target=ActivityLog.writeUpdateFridgeContentActivityToLog,args=[content, old_quantity], daemon=True)
+            t.start()
             return Response(serializer.data) #TODO: return current quantity
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -82,7 +90,7 @@ class ItemController():
     #get all items
     def getAllItems():
         items = Item.objects.all()
-        serializer = FridgeContentSerializer(items, many=True)
+        serializer = ItemSerializer(items, many=True)
         return Response(serializer.data)
     #get item from barcode
     def getItemFromBarcode(barcode):

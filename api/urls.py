@@ -10,11 +10,13 @@ urlpatterns = [
     path('logout/', views.userLogout, name='logout'),
     #Item paths
     path('items/', views.allItems, name="items"),
-    path('item/<str:pk>/', views.singleItem, name='item'),
+    #path('item/<str:pk>/', views.singleItem, name='item'),
+    path('create-item/', views.createItem, name='create-item'),
     path('item-barcode/', views.singleItemFromBarcode, name='item_from_barcode'),
     #Fridge content paths
-    path('fridge-contents/', views.allFridgeContent, name='fridge_contents'),
-    path('fridge-content/<str:pk>/', views.singleFridgeContent, name='fridge_content'),
+    path('fridge-contents/', views.allFridgeContent, name='fridge-contents'),
+    #path('fridge-content/<str:pk>/', views.singleFridgeContent, name='fridge_content'),
+    path('create-fridge-content/', views.createFridgeContent, name='create-fridge-content'),
     path('update-fridge-content-quantity/<str:pk>/', views.updateContentQuantity, name='update-quantity'),
     #Report paths
     path('all-reports/', views.allReportsInfo, name='all-reports'),
