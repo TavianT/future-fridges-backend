@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 from api.logging import ActivityLog
-from .controllers import DoorController, ReportController, UserController, FridgeContentController, ItemController
+from .controllers import ActivityLogController, DoorController, ReportController, UserController, FridgeContentController, ItemController
 from .serializers import UserSerializer
 
 '''Auth function'''
@@ -142,3 +142,8 @@ def lockDoor(request):
         else:
             return DoorController.lockFrontDoor()
     return HttpResponse(status=status.HTTP_403_FORBIDDEN)
+
+
+'''Activity log'''
+def recentActivityLogs(request):
+    return ActivityLogController.getLatestLogs()
