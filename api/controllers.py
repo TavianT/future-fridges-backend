@@ -149,11 +149,11 @@ class DoorController():
     FRONT_DOOR = "Front Door"
     BACK_DOOR = "Back Door"
 
+    #Auto lock door after 31 seconds (extra second to give for response time)
     def autoLockDoor(name):
-        print('going to sleep')
         sleep(31)
-        print('waking up to start fridge door lock')
         status = -1
+        # attempt tolock door until successful
         while status != 200:  
             if name == DoorController.FRONT_DOOR:
                 response = DoorController.lockFrontDoor()
@@ -161,12 +161,9 @@ class DoorController():
             else:
                 response = DoorController.lockBackDoor()
                 status = response.status_code
-        print(f'auto locked {name}')
 
     def getDoorStatus(name):
         door = Door.objects.get(name=name)
-        print(f'door id: {door.id}')
-        print(f'{name} is {door.door_locked}')
         return door.door_locked
 
     def setDoorStatus(name, status):
@@ -174,7 +171,6 @@ class DoorController():
         serializer = DoorSerializer(instance=door, data={"door_locked": status}, partial=True)
         if serializer.is_valid():
             serializer.save()
-            print(f'setting {name} door locked status to {status}')
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
