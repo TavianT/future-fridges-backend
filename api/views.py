@@ -135,7 +135,7 @@ def unlockDoor(request):
 
 @api_view(['POST'])
 def lockDoor(request):
-    # if delivery driver lock back door
+    # if delivery driver lock back door else it must be a chef so use front door
     if request.user.fridge_access:
         if request.user.role == 'DD':
             return DoorController.lockBackDoor()

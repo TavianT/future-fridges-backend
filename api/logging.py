@@ -3,6 +3,7 @@ import os
 class ActivityLog():
     LOG_PATH = "./logs/"
 
+    #use current dates as file names for daily log
     def getCurrentFilePath():
         current_date = datetime.now().strftime('%d_%m_%Y')
         file_name = f'activity_log_{current_date}.txt'
@@ -15,6 +16,7 @@ class ActivityLog():
         with open (file_path, 'a') as log_file:
             log_file.write(str_to_write)
 
+    #update an existing item in the log in the fridge
     def writeUpdateFridgeContentActivityToLog(fridge_content, old_quantity):
         str_to_write = ''
         if old_quantity < fridge_content.quantity:
@@ -23,7 +25,7 @@ class ActivityLog():
             str_to_write = f'{fridge_content.last_inserted_by.name} has removed {fridge_content.item.name} from the fridge decreasing the quantity to {fridge_content.quantity}\n'
         ActivityLog.writeToLogFile(str_to_write)
         
-            
+    #Log a new item added to the fridge
     def writeNewFridgeContentActivityToLog(fridge_content):
         expiration_date = fridge_content.expiration_date.strftime('%d/%m/%Y')
         str_to_write = f'{fridge_content.last_inserted_by.name} has inserted {fridge_content.item.name} into the fridge with a quantity of {fridge_content.quantity} - it expires on {expiration_date}\n'

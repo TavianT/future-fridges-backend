@@ -213,6 +213,7 @@ class ActivityLogController():
             filename = os.fsdecode(file)
             file_path = os.path.join(ActivityLog.LOG_PATH, filename)
             creation_date = datetime.fromtimestamp(os.path.getmtime(file_path))
+            #Check to see if logs are from within the last week
             if creation_date > week_ago:
                 creation_date = creation_date.strftime('%d-%m-%Y')
                 log_info = {
@@ -225,6 +226,7 @@ class ActivityLogController():
         return HttpResponse(logs, content_type="application/json")
 
     def downloadLog(filename):
+        #read in contents of the log file and return as a text file TODO: see if filetype needs changing
         file_path = os.path.join(ActivityLog.LOG_PATH, filename)
         if os.path.isfile(file_path):
             with open(file_path, 'r') as fh:
