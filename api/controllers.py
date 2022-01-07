@@ -224,4 +224,14 @@ class ActivityLogController():
         logs = json.dumps({'logs': logs}, indent=4)
         return HttpResponse(logs, content_type="application/json")
 
+    def downloadLog(filename):
+        file_path = os.path.join(ActivityLog.LOG_PATH, filename)
+        if os.path.isfile(file_path):
+            with open(file_path, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type = "text/plain")
+            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+            return response
+        else:
+            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
 

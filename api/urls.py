@@ -27,6 +27,7 @@ urlpatterns = [
     path('lock-door/', views.lockDoor, name="lock-door"),
     #Activity log paths
     path('logs/', views.recentActivityLogs, name='logs'),
+    path('download-log/<str:filename>/', views.returnLog, name='download-log')
 ]
 
 #TODO: Every monday reorder empty items

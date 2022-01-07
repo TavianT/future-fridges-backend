@@ -145,5 +145,10 @@ def lockDoor(request):
 
 
 '''Activity log'''
+api_view(['GET'])
 def recentActivityLogs(request):
     return ActivityLogController.getLatestLogs()
+
+api_view(['GET'])
+def returnLog(request, filename):
+     return ActivityLogController.downloadLog(filename)
