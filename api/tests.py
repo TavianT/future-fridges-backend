@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from .models import Supplier,Item,FridgeContent,User
 from django.urls import reverse
+from datetime import datetime, timedelta
 
 class ItemTests(APITestCase):
     def setUp(self):
@@ -35,12 +36,42 @@ class ItemTests(APITestCase):
         self.assertEqual(response.data[0]["name"],"Chicken")
 
     
-# class FridgeCotentTests(APITestCase):
-#     def setUp(self):
-#         self.test_supplier = Supplier.objects.create(name="supplier of tests", address="101 Test Street", contact_number="07878371993", email="test@food.com")
-#         self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
-#         self.test_user = User.objects.create(name="Test Boi", )
-#         self.test_fridge_content = FridgeContent.objects.create()
+class FridgeContentTests(APITestCase):
+    def setUp(self):
+        self.week_from_today = datetime.now() + timedelta(days=7)
+        self.test_supplier = Supplier.objects.create(name="supplier of tests", address="101 Test Street", contact_number="07878371993", email="test@food.com")
+        self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
+        self.test_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
+        self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, quantity=4, expiration_date=self.week_from_today, last_inserted_by=self.test_user)
+
+    def test_get_all_fridge_contents(self):
+        url = reverse('fridge-contents')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]["quantity"],4)
+
+    def test_create_fridge_content(self):
+        url = reverse('create-fridge-content')
+        data = {
+            "item": 1,
+            "quantity": 16,
+            "expiration_date": "2022-02-01",
+            "last_inserted_by": 1
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(FridgeContent.objects.count(), 2) #This cotent and content created in setup
+
+    def test_update_fridge_content_quantity(self):
+        url = reverse('update-quantity',args=[self.test_fridge_content.id]) #id of self.test_fridge_content
+        data = {
+            "quantity": 2
+        }
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(FridgeContent.objects.get(id=1).quantity, data["quantity"])
+
+
 
     
 
