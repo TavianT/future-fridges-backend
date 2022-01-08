@@ -32,6 +32,8 @@ To create regular users once the server is up and running go to http://localhost
 
 ## Test data
 
+*At least 2 regular users need to be created from admin site for this to work without error*
+
 To add the test data to the database the database file will need to be create see above migrate command, then run `sqlite3 db.sqlite3 < sqlite_test_scripts/SQL_FILE`
 
 The scripts provided should be ran in this order for the best result:
