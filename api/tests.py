@@ -3,7 +3,7 @@ from django.http import response
 from django.test.testcases import SerializeMixin
 from rest_framework import status
 from rest_framework.test import APITestCase
-from .models import Supplier,Item,FridgeContent,User
+from .models import Door, Supplier,Item,FridgeContent,User
 from django.urls import reverse
 from datetime import datetime, timedelta
 
@@ -108,3 +108,51 @@ class ReportTests(ReportTestMixin,APITestCase):
         #TODO: Figure out how to read contents of file
 
 
+class DoorTests(APITestCase):
+    def setUp(self):
+        self.test_dd_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
+        self.test_hc_user = User.objects.create(email= "tester8@test2.com", name="Test Girl", role="HC", fridge_access=True)
+        self.test_user_no_access = User.objects.create(email= "testa@test.com", name="Test Person", role="C", fridge_access=False)
+        
+        #Front and Back door entities are created when server is ran so no need to create them here
+
+    def testFrontDoorUnlock(self):
+        url = reverse('unlock-door')
+        self.client.force_login(self.test_hc_user)
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(Door.objects.get(name='Front Door').door_locked)
+
+    def testBackDoorUnlock(self):
+        url = reverse('unlock-door')
+        self.client.force_login(self.test_dd_user)
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(Door.objects.get(name='Back Door').door_locked)
+    
+    def testUnauthorisedDoorUnlock(self):
+        url = reverse('unlock-door')
+        self.client.force_login(self.test_user_no_access)
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertTrue(Door.objects.get(name='Front Door').door_locked)
+    
+    def testFrontDoorLock(self):
+        front_door =  Door.objects.get(name='Front Door')
+        front_door.door_locked = False
+        front_door.save()
+        self.client.force_login(self.test_hc_user)
+        url = reverse('lock-door')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(Door.objects.get(name='Front Door').door_locked)
+    
+    def testBackDoorLock(self):
+        back_door =  Door.objects.get(name='Back Door')
+        back_door.door_locked = False
+        back_door.save()
+        self.client.force_login(self.test_dd_user)
+        url = reverse('lock-door')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(Door.objects.get(name='Front Door').door_locked)
