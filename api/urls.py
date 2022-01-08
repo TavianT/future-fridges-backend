@@ -12,7 +12,7 @@ urlpatterns = [
     path('items/', views.allItems, name="items"),
     #path('item/<str:pk>/', views.singleItem, name='item'),
     path('create-item/', views.createItem, name='create-item'),
-    path('item-barcode/', views.singleItemFromBarcode, name='item_from_barcode'),
+    path('item-barcode/<str:barcode>/', views.singleItemFromBarcode, name='item-barcode'),
     #Fridge content paths
     path('fridge-contents/', views.allFridgeContent, name='fridge-contents'),
     #path('fridge-content/<str:pk>/', views.singleFridgeContent, name='fridge_content'),

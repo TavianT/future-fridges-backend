@@ -15,5 +15,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL("INSERT INTO api_door (name, door_locked) VALUES ('Front Door', 1), ('Back Door', 1);")
+        migrations.RunSQL("INSERT INTO api_door (name, lock_status) VALUES ('Front Door', 1), ('Back Door', 1);")
     ]

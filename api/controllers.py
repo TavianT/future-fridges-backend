@@ -94,6 +94,7 @@ class ItemController():
         return Response(serializer.data)
     #get item from barcode
     def getItemFromBarcode(barcode):
+        print(f'attempting to get item with barcode {barcode}')
         try:
             item = Item.objects.get(barcode=barcode)
             serializer = ItemSerializer(item, many=False)
