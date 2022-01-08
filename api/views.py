@@ -3,6 +3,7 @@ import threading
 from django.http.response import HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from rest_framework import status
 
 from rest_framework.decorators import api_view
@@ -14,6 +15,7 @@ from .serializers import UserSerializer
 '''Auth function'''
 #Used to login to the app via the backend, user information is saved as an instace and can be accessed without needing to pass any information about the current user
 @csrf_exempt
+@require_http_methods(["GET"])
 def userLogin(request):
     #Takes data from form via POST request
     email = request.POST['email']
@@ -29,6 +31,7 @@ def userLogin(request):
 
 #Logs the user out and clears instance
 @csrf_exempt
+@require_http_methods(["GET"])
 def userLogout(request):
     logout(request)
     return HttpResponse(status=status.HTTP_200_OK)
