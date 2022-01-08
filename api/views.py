@@ -130,7 +130,7 @@ def unlockDoor(request):
                 t = threading.Thread(target=DoorController.autoLockDoor,args=[DoorController.FRONT_DOOR], daemon=True)
                 t.start()
         return response
-    return HttpResponse(status=status.HTTP_403_FORBIDDEN)
+    return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
 def lockDoor(request):
