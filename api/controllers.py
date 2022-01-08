@@ -1,6 +1,8 @@
 from django.http.response import HttpResponse, JsonResponse
 from rest_framework import status
 
+from django.db.utils import OperationalError
+
 from rest_framework.response import Response
 
 from api.logging import ActivityLog
@@ -66,9 +68,12 @@ class FridgeContentController():
         serializer = FridgeContentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            content = FridgeContent.objects.get(id=serializer.data.get("id"))
-            t = threading.Thread(target=ActivityLog.writeNewFridgeContentActivityToLog,args=[content], daemon=True)
-            t.start()
+            try:
+                content = FridgeContent.objects.get(id=serializer.data.get("id"))
+                t = threading.Thread(target=ActivityLog.writeNewFridgeContentActivityToLog,args=[content], daemon=True)
+                t.start()
+            except (OperationalError, KeyError):
+                print("unable to write log")
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -94,7 +99,6 @@ class ItemController():
         return Response(serializer.data)
     #get item from barcode
     def getItemFromBarcode(barcode):
-        print(f'attempting to get item with barcode {barcode}')
         try:
             item = Item.objects.get(barcode=barcode)
             serializer = ItemSerializer(item, many=False)
