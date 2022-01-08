@@ -136,3 +136,6 @@ reports/health_and_safety_report.*
 
 #logs
 logs/activity*
+
+#SonarQube
+.scannerwork
