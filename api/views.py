@@ -15,9 +15,9 @@ from .serializers import UserSerializer
 '''Auth function'''
 #Used to login to the app via the backend, user information is saved as an instace and can be accessed without needing to pass any information about the current user
 @csrf_exempt
-@require_http_methods(["GET"])
+@require_http_methods(["POST"])
 def userLogin(request):
-    #Takes data from form via POST request
+    #Takes data from form via GET request
     email = request.POST['email']
     password = request.POST['password']
     user = authenticate(request, username=email, password=password)
