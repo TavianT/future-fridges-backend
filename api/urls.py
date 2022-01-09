@@ -1,6 +1,9 @@
 from os import name
+
+from api.reorder import Dates, Reorder
 from . import views
 from django.urls import path
+import threading
 urlpatterns = [
     #User paths
     path('users/', views.allUsers, name="users"),
@@ -31,3 +34,6 @@ urlpatterns = [
 ]
 
 #TODO: Every monday reorder empty items
+print("Checking for reorder")
+t = threading.Thread(target=Reorder.run,args=[Dates.Monday], daemon=True)
+t.start()
