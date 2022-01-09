@@ -34,7 +34,6 @@ class Reorder():
                         if supplier.name == content.item.supplier.name:
                             reorder_str += f'Item name: {content.item.name}\nBarcode: {content.item.barcode}\nQuantity (units to reorder): {content.default_quantity}\n\n'
                             content.delete()
-                            sleep(.5)
                     reorder_str += f'Please send the order to:\n{config.BUSINESS_ADDRESS}\n'
                     reorder_str += f'If there are any issues or questions please call {config.BUSINESS_CONTACT_NUMBER} or respond to this email'
                     print(reorder_str)
