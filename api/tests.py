@@ -15,12 +15,14 @@ class ItemTests(APITestCase):
         self.test_supplier = Supplier.objects.create(name="supplier of tests", address="101 Test Street", contact_number="07878371993", email="test@food.com")
         self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
     
+    #Test if correct item is returned from the barcode
     def testItemReadFromBarcode(self):
         url = reverse('item-barcode',args=[self.test_item.barcode])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()['name'],'Chicken')
 
+    #Test if item is created correctly
     def testItemCreate(self):
         url = reverse('create-item')
         data = {
@@ -34,6 +36,7 @@ class ItemTests(APITestCase):
         self.assertEqual(Item.objects.count(), 2) #This item and item created in setup
         self.assertEqual(Item.objects.get(barcode=data["barcode"]).name, data["name"])
 
+    #test if 'all' items are returned, in this case it would just be one
     def testGetAllItemsTest(self):
         url = reverse('items')
         response = self.client.get(url)
@@ -49,12 +52,14 @@ class FridgeContentTests(APITestCase):
         self.test_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
         self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, quantity=4, expiration_date=self.week_from_today, last_inserted_by=self.test_user)
 
+    #Test if all fridge content is returned
     def testGetAllFridgeContents(self):
         url = reverse('fridge-contents')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0]["quantity"],4)
 
+    #Test if fridge content is created correctly
     def testCreateFridgeContent(self):
         url = reverse('create-fridge-content')
         data = {
@@ -67,6 +72,7 @@ class FridgeContentTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(FridgeContent.objects.count(), 2) #This cotent and content created in setup
 
+    #Test if quantity of fridge content is updated correctly
     def testUpdateFridgeContentQuantity(self):
         url = reverse('update-quantity',args=[self.test_fridge_content.id]) #id of self.test_fridge_content
         data = {
@@ -92,18 +98,20 @@ class ReportTests(ReportTestMixin,APITestCase):
         self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, quantity=4, expiration_date=self.week_from_today, last_inserted_by=self.test_user)
         self.test_fridge_content_2 = FridgeContent.objects.create(item=self.test_item_2, quantity=22, expiration_date=self.week_ago, last_inserted_by=self.test_user)
 
+    #Test if report is generated successfully
     def testReportGeneration(self):
         url = reverse('generate-report')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["name"].endswith(self.file_type),True)
 
+    #Test if all reports are returned
     def testGetAllReports(self):
         url = reverse('all-reports')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()['reports_info'][0]["name"].endswith(self.file_type),True)
-
+    #Test if single report is returned correctly
     def testGetReport(self):
         url = reverse('donwload-report', args=["test_report.xlsx"])
         response = self.client.get(url)
@@ -116,9 +124,9 @@ class DoorTests(APITestCase):
         self.test_dd_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
         self.test_hc_user = User.objects.create(email= "tester8@test2.com", name="Test Girl", role="HC", fridge_access=True)
         self.test_user_no_access = User.objects.create(email= "testa@test.com", name="Test Person", role="C", fridge_access=False)
-        
         #Front and Back door entities are created when server is ran so no need to create them here
 
+    #Test if front door unlocks correctly
     def testFrontDoorUnlock(self):
         url = reverse('unlock-door')
         self.client.force_login(self.test_hc_user)
@@ -126,6 +134,7 @@ class DoorTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertFalse(Door.objects.get(name='Front Door').door_locked)
 
+    #Test if back door unlocks correctly
     def testBackDoorUnlock(self):
         url = reverse('unlock-door')
         self.client.force_login(self.test_dd_user)
@@ -133,6 +142,7 @@ class DoorTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertFalse(Door.objects.get(name='Back Door').door_locked)
     
+    #test if an unauthorised user tries to unlock the back door
     def testUnauthorisedDoorUnlock(self):
         url = reverse('unlock-door')
         self.client.force_login(self.test_user_no_access)
@@ -140,6 +150,7 @@ class DoorTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertTrue(Door.objects.get(name='Front Door').door_locked)
     
+    #Test if front door locks correctly
     def testFrontDoorLock(self):
         front_door =  Door.objects.get(name='Front Door')
         front_door.door_locked = False
@@ -150,6 +161,7 @@ class DoorTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(Door.objects.get(name='Front Door').door_locked)
     
+    #Test if back door locks correctly
     def testBackDoorLock(self):
         back_door =  Door.objects.get(name='Back Door')
         back_door.door_locked = False
