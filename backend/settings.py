@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'api',
     'rest_framework',
+    'constance.backends.database',
+    'constance',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -129,4 +131,14 @@ AUTH_USER_MODEL = 'api.User'
 
 REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'json'
+}
+
+#Constance
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+
+CONSTANCE_CONFIG = {
+    'BUSINESS_ADDRESS': ('null', 'The address of the business where the fridge is located'),
+    'BUSINESS_EMAIL_ADDRESS': ('null', 'The email address to send reorders from'),
+    'BUSINESS_EMAIL_PASSWORD': ('null', 'The password for the email address'),
+    'BUSINESS_CONTACT_NUMBER': ('null','The contanct number for the business'),
 }

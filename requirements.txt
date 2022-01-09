@@ -1,3 +1,4 @@
 Django==4.0
 djangorestframework==3.13.0
 xlsxwriter==3.0.2
+django-constance[database]
