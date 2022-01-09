@@ -25,9 +25,14 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('email',)
 
 class ItemAdmin(admin.ModelAdmin):
+    list_display = ('name','barcode', 'supplier')
+    search_fields = ('name','barcode')
+    list_filter = ('supplier',)
     form = ItemCreationForm
 
 class SupplierAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'contact_number')
+    search_fields = ('name','email')
     form = SupplierCreationForm
 
 admin.site.register(User, CustomUserAdmin)
