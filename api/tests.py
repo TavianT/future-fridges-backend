@@ -183,6 +183,7 @@ class ActivityLogTests(APITestCase):
         self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, quantity=4, expiration_date=self.week_from_today, last_inserted_by=self.test_user)
         self.test_fridge_content_2 = FridgeContent.objects.create(item=self.test_item_2, quantity=22, expiration_date=self.week_ago, last_inserted_by=self.test_user)
     
+    #Test if new fridge content is written log file
     def testActivityLogWriteNewContent(self):
         ActivityLog.writeNewFridgeContentActivityToLog(self.test_fridge_content)
         current_date = datetime.now().strftime('%d_%m_%Y')
@@ -192,6 +193,7 @@ class ActivityLogTests(APITestCase):
 
         self.assertTrue(os.path.exists(correct_file_path))
 
+    #Test if update of fridge content is written log file
     def testActivityLogUpdateContent(self):
         ActivityLog.writeUpdateFridgeContentActivityToLog(self.test_fridge_content_2, 20)
         current_date = datetime.now().strftime('%d_%m_%Y')
@@ -200,6 +202,7 @@ class ActivityLogTests(APITestCase):
 
         self.assertTrue(os.path.exists(correct_file_path))
 
+    #Test if all log files are returned
     def testGetAllLogsNames(self):
         log_in_response = False
         current_date = datetime.now().strftime('%d_%m_%Y')
@@ -213,6 +216,7 @@ class ActivityLogTests(APITestCase):
         
         self.assertTrue(log_in_response)
 
+    #Test if current log file is returned
     def testGetCurrentLog(self):
         current_date = datetime.now().strftime('%d_%m_%Y')
         correct_file_name = f'activity_log_{current_date}.txt'
