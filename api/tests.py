@@ -3,9 +3,12 @@ from django.http import response
 from django.test.testcases import SerializeMixin
 from rest_framework import status
 from rest_framework.test import APITestCase
+
+from api.logging import ActivityLog
 from .models import Door, Supplier,Item,FridgeContent,User
 from django.urls import reverse
 from datetime import datetime, timedelta
+import os
 
 class ItemTests(APITestCase):
     def setUp(self):
@@ -156,3 +159,56 @@ class DoorTests(APITestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(Door.objects.get(name='Front Door').door_locked)
+
+class ActivityLogTests(APITestCase):
+    def setUp(self):
+        self.week_from_today = datetime.now() + timedelta(days=7)
+        self.week_ago = datetime.now() - timedelta(days=7)
+        self.test_supplier = Supplier.objects.create(name="supplier of tests", address="101 Test Street", contact_number="07878371993", email="test@food.com")
+        self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
+        self.test_item_2 = Item.objects.create(name="Carrot", weight=0.1, barcode="010101205010", supplier=self.test_supplier)
+        self.test_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
+        self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, quantity=4, expiration_date=self.week_from_today, last_inserted_by=self.test_user)
+        self.test_fridge_content_2 = FridgeContent.objects.create(item=self.test_item_2, quantity=22, expiration_date=self.week_ago, last_inserted_by=self.test_user)
+    
+    def testActivityLogWriteNewContent(self):
+        ActivityLog.writeNewFridgeContentActivityToLog(self.test_fridge_content)
+        current_date = datetime.now().strftime('%d_%m_%Y')
+        correct_file_name = f'activity_log_{current_date}.txt'
+
+        correct_file_path = os.path.join(ActivityLog.LOG_PATH, correct_file_name)
+
+        self.assertTrue(os.path.exists(correct_file_path))
+
+    def testActivityLogUpdateContent(self):
+        ActivityLog.writeUpdateFridgeContentActivityToLog(self.test_fridge_content_2, 20)
+        current_date = datetime.now().strftime('%d_%m_%Y')
+        correct_file_name = f'activity_log_{current_date}.txt'
+        correct_file_path = os.path.join(ActivityLog.LOG_PATH, correct_file_name)
+
+        self.assertTrue(os.path.exists(correct_file_path))
+
+    def testGetAllLogsNames(self):
+        log_in_response = False
+        current_date = datetime.now().strftime('%d_%m_%Y')
+        correct_file_name = f'activity_log_{current_date}.txt'
+        url = reverse('logs')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for log in response.json()["logs"]:
+            if log["name"] == correct_file_name:
+                log_in_response = True
+        
+        self.assertTrue(log_in_response)
+
+    def testGetCurrentLog(self):
+        current_date = datetime.now().strftime('%d_%m_%Y')
+        correct_file_name = f'activity_log_{current_date}.txt'
+
+        url = reverse('download-log', args=[correct_file_name])
+        response = self.client.get(url)
+
+        self.assertEquals(
+            response.get('Content-Disposition'),
+            f'attachment; filename={correct_file_name}'
+        )
