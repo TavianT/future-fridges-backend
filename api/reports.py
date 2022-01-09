@@ -37,7 +37,7 @@ class HealthAndSafetyReport():
             col += 1
             worksheet.write_datetime(row,col,obj.expiration_date, date_format)
             col += 1
-            worksheet.write(row, col, obj.quantity)
+            worksheet.write(row, col, obj.current_quantity)
             col = 0
             row += 1
         workbook.close()

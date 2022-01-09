@@ -51,21 +51,22 @@ class FridgeContentTests(APITestCase):
         self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
         self.test_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
         self.test_user_2 = User.objects.create(email= "testa@test.com", name="Test Chef", role="C", fridge_access=True)
-        self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, quantity=4, expiration_date=self.week_from_today, last_inserted_by=self.test_user)
+        self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, current_quantity=4, default_quantity=4,expiration_date=self.week_from_today, last_inserted_by=self.test_user)
 
     #Test if all fridge content is returned
     def testGetAllFridgeContents(self):
         url = reverse('fridge-contents')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]["quantity"],4)
+        self.assertEqual(response.data[0]["current_quantity"],4)
 
     #Test if fridge content is created correctly
     def testCreateFridgeContent(self):
         url = reverse('create-fridge-content')
         data = {
             "item": 1,
-            "quantity": 16,
+            "current_quantity": 16,
+            "default_quantity": 16,
             "expiration_date": "2022-02-01",
             "last_inserted_by": 1
         }
@@ -78,11 +79,11 @@ class FridgeContentTests(APITestCase):
         self.client.force_login(self.test_user_2)
         url = reverse('update-quantity',args=[self.test_fridge_content.id]) #id of self.test_fridge_content
         data = {
-            "quantity": 2
+            "current_quantity": 2
         }
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(FridgeContent.objects.get(id=1).quantity, data["quantity"])
+        self.assertEqual(FridgeContent.objects.get(id=1).current_quantity, data["current_quantity"])
         self.assertEqual(FridgeContent.objects.get(id=1).last_inserted_by.id, self.test_user_2.id)
 
 #Allows report tests to be ran in serial
@@ -98,8 +99,8 @@ class ReportTests(ReportTestMixin,APITestCase):
         self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
         self.test_item_2 = Item.objects.create(name="Carrot", weight=0.1, barcode="010101205010", supplier=self.test_supplier)
         self.test_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
-        self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, quantity=4, expiration_date=self.week_from_today, last_inserted_by=self.test_user)
-        self.test_fridge_content_2 = FridgeContent.objects.create(item=self.test_item_2, quantity=22, expiration_date=self.week_ago, last_inserted_by=self.test_user)
+        self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, current_quantity=4, default_quantity=4,expiration_date=self.week_from_today, last_inserted_by=self.test_user)
+        self.test_fridge_content_2 = FridgeContent.objects.create(item=self.test_item_2, current_quantity=22, default_quantity=22,expiration_date=self.week_ago, last_inserted_by=self.test_user)
 
     #Test if report is generated successfully
     def testReportGeneration(self):
@@ -183,8 +184,8 @@ class ActivityLogTests(APITestCase):
         self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
         self.test_item_2 = Item.objects.create(name="Carrot", weight=0.1, barcode="010101205010", supplier=self.test_supplier)
         self.test_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
-        self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, quantity=4, expiration_date=self.week_from_today, last_inserted_by=self.test_user)
-        self.test_fridge_content_2 = FridgeContent.objects.create(item=self.test_item_2, quantity=22, expiration_date=self.week_ago, last_inserted_by=self.test_user)
+        self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, current_quantity=4, default_quantity=4,expiration_date=self.week_from_today, last_inserted_by=self.test_user)
+        self.test_fridge_content_2 = FridgeContent.objects.create(item=self.test_item_2,current_quantity=22, default_quantity=22,expiration_date=self.week_ago, last_inserted_by=self.test_user)
     
     #Test if new fridge content is written log file
     def testActivityLogWriteNewContent(self):
