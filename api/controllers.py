@@ -80,13 +80,18 @@ class FridgeContentController():
     def updateQuantity(request,pk):
         content = FridgeContent.objects.get(id=pk)
         old_quantity = content.quantity
-        # TODO: get current quantity here
-        serializer = FridgeContentSerializer(instance=content, data=request.data, partial=True)
+        last_inserted_by = request.user.id
+        data = {
+            "quantity": request.data["quantity"],
+            "last_inserted_by": last_inserted_by
+        }
+        serializer = FridgeContentSerializer(instance=content, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
             t = threading.Thread(target=ActivityLog.writeUpdateFridgeContentActivityToLog,args=[content, old_quantity], daemon=True)
             t.start()
             return Response(serializer.data) #TODO: return current quantity
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

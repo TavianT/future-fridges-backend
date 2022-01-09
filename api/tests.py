@@ -50,6 +50,7 @@ class FridgeContentTests(APITestCase):
         self.test_supplier = Supplier.objects.create(name="supplier of tests", address="101 Test Street", contact_number="07878371993", email="test@food.com")
         self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
         self.test_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
+        self.test_user_2 = User.objects.create(email= "testa@test.com", name="Test Chef", role="C", fridge_access=True)
         self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, quantity=4, expiration_date=self.week_from_today, last_inserted_by=self.test_user)
 
     #Test if all fridge content is returned
@@ -74,6 +75,7 @@ class FridgeContentTests(APITestCase):
 
     #Test if quantity of fridge content is updated correctly
     def testUpdateFridgeContentQuantity(self):
+        self.client.force_login(self.test_user_2)
         url = reverse('update-quantity',args=[self.test_fridge_content.id]) #id of self.test_fridge_content
         data = {
             "quantity": 2
@@ -81,6 +83,7 @@ class FridgeContentTests(APITestCase):
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(FridgeContent.objects.get(id=1).quantity, data["quantity"])
+        self.assertEqual(FridgeContent.objects.get(id=1).last_inserted_by.id, self.test_user_2.id)
 
 #Allows report tests to be ran in serial
 class ReportTestMixin(SerializeMixin):
