@@ -81,8 +81,9 @@ class FridgeContentController():
         content = FridgeContent.objects.get(id=pk)
         old_quantity = content.current_quantity
         last_inserted_by = request.user.id
+        print(request.data["current_quantity"])
         data = {
-            "quantity": request.data["current_quantity"],
+            "current_quantity": request.data["current_quantity"],
             "last_inserted_by": last_inserted_by
         }
         serializer = FridgeContentSerializer(instance=content, data=data, partial=True)
