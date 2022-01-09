@@ -35,5 +35,5 @@ urlpatterns = [
 
 #TODO: Every monday reorder empty items
 print("Checking for reorder")
-t = threading.Thread(target=Reorder.run,args=[Dates.Monday], daemon=True)
+t = threading.Thread(target=Reorder.run, args=[Dates.Sunday.value], daemon=True)
 t.start()

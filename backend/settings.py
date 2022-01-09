@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+from constance import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -142,3 +143,10 @@ CONSTANCE_CONFIG = {
     'BUSINESS_EMAIL_PASSWORD': ('null', 'The password for the email address'),
     'BUSINESS_CONTACT_NUMBER': ('null','The contanct number for the business'),
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = CONSTANCE_CONFIG['BUSINESS_EMAIL_ADDRESS']
+EMAIL_HOST_PASSWORD = CONSTANCE_CONFIG['BUSINESS_EMAIL_PASSWORD']
