@@ -2,7 +2,7 @@
 
 ## How to run
 
-### Prerequites
+### Prerequisites
 
 Python version 3.8 is needed to run this without any issues (3.9 might work but It hasn't been tested)
 
