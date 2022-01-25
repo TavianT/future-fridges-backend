@@ -63,5 +63,7 @@ class Door(models.Model):
         return self.name
 
 
-
-
+class Notification(models.Model):
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE)
+    delivered = models.BooleanField(default=False)
+    message = models.CharField(max_length=1024)
