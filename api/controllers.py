@@ -6,6 +6,7 @@ from django.db.utils import OperationalError
 from rest_framework.response import Response
 
 from api.logging import ActivityLog
+from api.notifications import create_low_quantity_notification
 
 from .reports import HealthAndSafetyReport
 from .serializers import UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer
@@ -91,6 +92,8 @@ class FridgeContentController():
             serializer.save()
             t = threading.Thread(target=ActivityLog.writeUpdateFridgeContentActivityToLog,args=[content, old_quantity], daemon=True)
             t.start()
+            t2 = threading.Thread(target=create_low_quantity_notification, args=[content], daemon=True)
+            t2.start()
             return Response(serializer.data) #TODO: return current quantity
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
