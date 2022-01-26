@@ -4,13 +4,15 @@ from rest_framework import status
 from django.db.utils import OperationalError
 
 from rest_framework.response import Response
+from api import notifications
 
 from api.logging import ActivityLog
 from api.notifications import create_low_quantity_notification
+from api.views import deleteNotification
 
 from .reports import HealthAndSafetyReport
-from .serializers import UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer
-from .models import Door, User,FridgeContent,Item
+from .serializers import UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer, NotificationSerializer
+from .models import Door, Notification, User,FridgeContent,Item
 
 from datetime import date, datetime, timedelta
 from time import sleep
@@ -246,4 +248,22 @@ class ActivityLogController():
         else:
             return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
+class NotificationController():
+    def getAllNotifications(request):
+        notifications = Notification.objects.all().order_by('-creation_date')
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response(serializer.data)
 
+    def deleteNotification(request, pk):
+        try:
+            notification = Notification.objects.get(id=pk)
+        except Notification.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        success = notification.delete()
+        data = {}
+        if success:
+            data["success"] = "deleted notification successfully"
+            return Response(data)
+        else:
+            data["error"] = "error deleting notification"
+            return Response(data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

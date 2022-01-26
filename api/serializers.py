@@ -1,6 +1,6 @@
 from django.db.models import fields
 from rest_framework import serializers
-from .models import Door, User, Item, FridgeContent
+from .models import Door, Notification, User, Item, FridgeContent
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,4 +21,9 @@ class FridgeContentSerializer(serializers.ModelSerializer):
 class DoorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Door
+        fields = '__all__'
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
         fields = '__all__'

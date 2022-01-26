@@ -31,7 +31,10 @@ urlpatterns = [
     path('lock-door/', views.lockDoor, name="lock-door"),
     #Activity log paths
     path('logs/', views.recentActivityLogs, name='logs'),
-    path('download-log/<str:filename>/', views.returnLog, name='download-log')
+    path('download-log/<str:filename>/', views.returnLog, name='download-log'),
+    #Notification paths
+    path('notifications/', views.allNotifications, name='notifications'),
+    path('delete-notification/<str:pk>/', views.deleteNotification, name='delete-notification'),
 ]
 
 #TODO: Every monday reorder empty items

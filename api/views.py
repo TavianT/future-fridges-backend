@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 from api.logging import ActivityLog
-from .controllers import ActivityLogController, DoorController, ReportController, UserController, FridgeContentController, ItemController
+from .controllers import ActivityLogController, DoorController, NotificationController, ReportController, UserController, FridgeContentController, ItemController
 from .serializers import UserSerializer
 
 '''Auth function'''
@@ -154,3 +154,18 @@ def recentActivityLogs(request):
 api_view(['GET'])
 def returnLog(request, filename):
      return ActivityLogController.downloadLog(filename)
+
+'''Notifications'''
+api_view(['GET'])
+def allNotifications(request):
+    if request.user.id == None or request.user.role != 'HC':
+        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+    return NotificationController.getAllNotifications(request)
+
+api_view(['DELETE'])
+def deleteNotification(request, pk):
+    if request.user.id == None or request.user.role != 'HC':
+        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+    return NotificationController.deleteNotification(request, pk)
+    
+    

@@ -67,3 +67,4 @@ class Notification(models.Model):
     recipients = models.ManyToManyField(User)
     delivered = models.BooleanField(default=False)
     message = models.CharField(max_length=1024)
+    creation_date = models.DateTimeField(auto_now_add=True)
