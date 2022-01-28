@@ -211,6 +211,11 @@ class DoorController():
             return DoorController.setDoorStatus(DoorController.BACK_DOOR, True)
         return HttpResponse(status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
 
+    def returnAllDoorStatus(request):
+        doors = Door.objects.all()
+        serializer = DoorSerializer(doors, many=True)
+        return Response(serializer.data)
+
 class ActivityLogController():
     def getLatestLogs():
         logs = []

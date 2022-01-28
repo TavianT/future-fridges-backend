@@ -28,6 +28,7 @@ urlpatterns = [
     #Door paths
     path('unlock-door/', views.unlockDoor, name="unlock-door"),
     path('lock-door/', views.lockDoor, name="lock-door"),
+    path('doors/', views.doorLockStatus, name='doors'),
     #Activity log paths
     path('logs/', views.recentActivityLogs, name='logs'),
     path('download-log/<str:filename>/', views.returnLog, name='download-log')

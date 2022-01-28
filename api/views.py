@@ -145,12 +145,15 @@ def lockDoor(request):
             return DoorController.lockFrontDoor()
     return HttpResponse(status=status.HTTP_403_FORBIDDEN)
 
+@api_view(['GET'])
+def doorLockStatus(request):
+    return DoorController.returnAllDoorStatus(request)
 
 '''Activity log'''
-api_view(['GET'])
+@api_view(['GET'])
 def recentActivityLogs(request):
     return ActivityLogController.getLatestLogs()
 
-api_view(['GET'])
+@api_view(['GET'])
 def returnLog(request, filename):
      return ActivityLogController.downloadLog(filename)
