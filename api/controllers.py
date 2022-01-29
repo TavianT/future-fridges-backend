@@ -4,11 +4,9 @@ from rest_framework import status
 from django.db.utils import OperationalError
 
 from rest_framework.response import Response
-from api import notifications
 
 from api.logging import ActivityLog
 from api.notifications import create_low_quantity_notification
-from api.views import deleteNotification
 
 from .reports import HealthAndSafetyReport
 from .serializers import UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer, NotificationSerializer

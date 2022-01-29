@@ -147,22 +147,22 @@ def lockDoor(request):
 
 
 '''Activity log'''
-api_view(['GET'])
+@api_view(['GET'])
 def recentActivityLogs(request):
     return ActivityLogController.getLatestLogs()
 
-api_view(['GET'])
+@api_view(['GET'])
 def returnLog(request, filename):
      return ActivityLogController.downloadLog(filename)
 
 '''Notifications'''
-api_view(['GET'])
+@api_view(['GET'])
 def allNotifications(request):
     if request.user.id == None or request.user.role != 'HC':
         return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
     return NotificationController.getAllNotifications(request)
 
-api_view(['DELETE'])
+@api_view(['DELETE'])
 def deleteNotification(request, pk):
     if request.user.id == None or request.user.role != 'HC':
         return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
