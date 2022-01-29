@@ -1,6 +1,7 @@
 from os import name
 
 from api.reorder import Dates, Reorder
+from api.notifications import create_expiring_items_notification
 from . import views
 from django.urls import path
 import threading
@@ -31,10 +32,16 @@ urlpatterns = [
     path('doors/', views.doorLockStatus, name='doors'),
     #Activity log paths
     path('logs/', views.recentActivityLogs, name='logs'),
-    path('download-log/<str:filename>/', views.returnLog, name='download-log')
+    path('download-log/<str:filename>/', views.returnLog, name='download-log'),
+    #Notification paths
+    path('notifications/', views.allNotifications, name='notifications'),
+    path('delete-notification/<str:pk>/', views.deleteNotification, name='delete-notification'),
 ]
 
 #TODO: Every monday reorder empty items
 print("Checking for reorder")
 t = threading.Thread(target=Reorder.run, args=[Dates.Sunday.value], daemon=True)
 t.start()
+
+t2 = threading.Thread(target=create_expiring_items_notification, daemon=True)
+t2.start()
