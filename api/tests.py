@@ -242,7 +242,7 @@ class NotificationTests(APITestCase):
         self.test_item_2 = Item.objects.create(name="Carrot", weight=0.1, barcode="010101205010", supplier=self.test_supplier)
         self.test_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
         self.test_user_2 = User.objects.create(email= "testa@test.com", name="Test Chef", role="HC", fridge_access=True)
-        # self.test_fridge_content_2 = FridgeContent.objects.create(item=self.test_item_2,current_quantity=22, default_quantity=22,expiration_date=self.week_ago, last_inserted_by=self.test_user)
+       # self.test_fridge_content_2 = FridgeContent.objects.create(item=self.test_item_2,current_quantity=22, default_quantity=22,expiration_date=self.week_ago, last_inserted_by=self.test_user)
 
     def testLowStockNotification(self):
         self.client.force_login(self.test_user_2)
@@ -253,4 +253,13 @@ class NotificationTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0]["message"], test_msg)
-    
+
+    def testDeleteNotification(self):
+        self.client.force_login(self.test_user_2)
+        test_fridge_content = FridgeContent.objects.create(item=self.test_item, current_quantity=0.4, default_quantity=4,expiration_date=self.week_from_today, last_inserted_by=self.test_user)
+        create_low_quantity_notification(test_fridge_content)
+        url = reverse('delete-notification',args=[test_fridge_content.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["success"], "deleted notification successfully")
+        
