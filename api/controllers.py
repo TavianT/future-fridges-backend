@@ -57,6 +57,14 @@ class FridgeContentController():
         serializer = FridgeContentSerializer(fridge_contents, many=True)
         return Response(serializer.data)
 
+    def checkFridgeOverfill(new_volume):
+        fridge_contents = FridgeContent.objects.all()
+        current_volume = 0
+        for content in fridge_contents:
+            current_volume += content.item.weight
+        if current_volume + new_volume > 400:
+            return True
+        return False
     # Check to see if fridge content exists
     def singleFridgeContentCreateCheck(pk): 
         try:
@@ -79,7 +87,10 @@ class FridgeContentController():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def updateQuantity(request,pk):
-        content = FridgeContent.objects.get(id=pk)
+        try:
+            content = FridgeContent.objects.get(id=pk)
+        except FridgeContent.DoesNotExist:
+            return HttpResponse(status=status.HTTP_404_NOT_FOUND) # Return 404
         old_quantity = content.current_quantity
         last_inserted_by = request.user.id
         print(request.data["current_quantity"])
