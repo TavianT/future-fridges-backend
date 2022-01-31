@@ -14,7 +14,7 @@ from api.notifications import create_low_quantity_notification
 class ItemTests(APITestCase):
     def setUp(self):
         self.test_supplier = Supplier.objects.create(name="supplier of tests", address="101 Test Street", contact_number="07878371993", email="test@food.com")
-        self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
+        self.test_item = Item.objects.create(name="Chicken", weight=10, barcode="010101205647", supplier=self.test_supplier)
     
     #Test if correct item is returned from the barcode
     def testItemReadFromBarcode(self):
@@ -49,7 +49,7 @@ class FridgeContentTests(APITestCase):
     def setUp(self):
         self.week_from_today = datetime.now() + timedelta(days=7)
         self.test_supplier = Supplier.objects.create(name="supplier of tests", address="101 Test Street", contact_number="07878371993", email="test@food.com")
-        self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
+        self.test_item = Item.objects.create(name="Chicken", weight=10, barcode="010101205647", supplier=self.test_supplier)
         self.test_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
         self.test_user_2 = User.objects.create(email= "testa@test.com", name="Test Chef", role="C", fridge_access=True)
         self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, current_quantity=4, default_quantity=4,expiration_date=self.week_from_today, last_inserted_by=self.test_user)
@@ -87,6 +87,20 @@ class FridgeContentTests(APITestCase):
         self.assertEqual(FridgeContent.objects.get(id=1).current_quantity, data["current_quantity"])
         self.assertEqual(FridgeContent.objects.get(id=1).last_inserted_by.id, self.test_user_2.id)
 
+    def testFridgeOverfillError(self):
+        test_item_2 = Item.objects.create(name="Gravy", weight=400, barcode="010101205647", supplier=self.test_supplier)
+        self.client.force_login(self.test_user_2)
+        url = reverse('create-fridge-content')
+        data = {
+            "item": 2,
+            "current_quantity": 1,
+            "default_quantity": 1,
+            "expiration_date": "2022-02-10",
+            "last_inserted_by": 1
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 #Allows report tests to be ran in serial
 class ReportTestMixin(SerializeMixin):
     lockfile = __file__
@@ -97,7 +111,7 @@ class ReportTests(ReportTestMixin,APITestCase):
         self.week_from_today = datetime.now() + timedelta(days=7)
         self.week_ago = datetime.now() - timedelta(days=7)
         self.test_supplier = Supplier.objects.create(name="supplier of tests", address="101 Test Street", contact_number="07878371993", email="test@food.com")
-        self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
+        self.test_item = Item.objects.create(name="Chicken", weight=10, barcode="010101205647", supplier=self.test_supplier)
         self.test_item_2 = Item.objects.create(name="Carrot", weight=0.1, barcode="010101205010", supplier=self.test_supplier)
         self.test_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
         self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, current_quantity=4, default_quantity=4,expiration_date=self.week_from_today, last_inserted_by=self.test_user)
@@ -182,7 +196,7 @@ class ActivityLogTests(APITestCase):
         self.week_from_today = datetime.now() + timedelta(days=7)
         self.week_ago = datetime.now() - timedelta(days=7)
         self.test_supplier = Supplier.objects.create(name="supplier of tests", address="101 Test Street", contact_number="07878371993", email="test@food.com")
-        self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
+        self.test_item = Item.objects.create(name="Chicken", weight=10, barcode="010101205647", supplier=self.test_supplier)
         self.test_item_2 = Item.objects.create(name="Carrot", weight=0.1, barcode="010101205010", supplier=self.test_supplier)
         self.test_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
         self.test_fridge_content = FridgeContent.objects.create(item=self.test_item, current_quantity=4, default_quantity=4,expiration_date=self.week_from_today, last_inserted_by=self.test_user)
@@ -238,7 +252,7 @@ class NotificationTests(APITestCase):
     def setUp(self):
         self.week_from_today = datetime.now() + timedelta(days=7)
         self.test_supplier = Supplier.objects.create(name="supplier of tests", address="101 Test Street", contact_number="07878371993", email="test@food.com")
-        self.test_item = Item.objects.create(name="Chicken", weight=166, barcode="010101205647", supplier=self.test_supplier)
+        self.test_item = Item.objects.create(name="Chicken", weight=10, barcode="010101205647", supplier=self.test_supplier)
         self.test_item_2 = Item.objects.create(name="Carrot", weight=0.1, barcode="010101205010", supplier=self.test_supplier)
         self.test_user = User.objects.create(email= "tester@test.com", name="Test Boi", role="DD", fridge_access=True)
         self.test_user_2 = User.objects.create(email= "testa@test.com", name="Test Chef", role="HC", fridge_access=True)

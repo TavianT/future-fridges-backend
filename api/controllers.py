@@ -61,7 +61,7 @@ class FridgeContentController():
         fridge_contents = FridgeContent.objects.all()
         current_volume = 0
         for content in fridge_contents:
-            current_volume += content.item.weight
+            current_volume += content.item.weight * content.current_quantity
         if current_volume + new_volume > 400:
             return True
         return False

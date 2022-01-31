@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 from api.logging import ActivityLog
+from api.models import Item
 from .controllers import ActivityLogController, DoorController, NotificationController, ReportController, UserController, FridgeContentController, ItemController
 from .serializers import UserSerializer
 
@@ -71,6 +72,13 @@ def singleFridgeContent(request,pk):
 
 @api_view(['POST'])
 def createFridgeContent(request):
+    item = Item.objects.get(id=request.data["item"])
+    #Check if adding this item will overfill the fridge
+    if FridgeContentController.checkFridgeOverfill(item.weight * request.data["current_quantity"]):
+        response = {
+            "error": "Adding this item will overfill the fridge, please speak to a member of staff to fix the issue"
+        }
+        return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
     return FridgeContentController.createFridgeContent(request)
 
 @api_view(['PUT'])
