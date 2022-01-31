@@ -40,7 +40,7 @@ urlpatterns = [
 
 #TODO: Every monday reorder empty items
 print("Checking for reorder")
-t = threading.Thread(target=Reorder.run, args=[Dates.Sunday.value], daemon=True)
+t = threading.Thread(target=Reorder.run, args=[Dates.Monday.value], daemon=True)
 t.start()
 
 t2 = threading.Thread(target=create_expiring_items_notification, daemon=True)
