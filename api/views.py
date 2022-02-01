@@ -74,7 +74,7 @@ def singleFridgeContent(request,pk):
 def createFridgeContent(request):
     item = Item.objects.get(id=request.data["item"])
     #Check if adding this item will overfill the fridge
-    if FridgeContentController.checkFridgeOverfill(item.weight * request.data["current_quantity"]):
+    if FridgeContentController.checkFridgeOverfill(item.weight * float(request.data["current_quantity"])):
         response = {
             "error": "Adding this item will overfill the fridge, please speak to a member of staff to fix the issue"
         }
