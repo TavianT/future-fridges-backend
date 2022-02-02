@@ -5,6 +5,7 @@ from django.utils.timezone import make_aware
 import xlsxwriter
 from datetime import datetime
 import json
+import os
 
 class HealthAndSafetyReport():
     def generateReport():
@@ -41,7 +42,16 @@ class HealthAndSafetyReport():
             col = 0
             row += 1
         workbook.close()
-        response = json.dumps({"name": report_name}, indent=4)
+        file_path = os.path.join("reports/", report_name)
+        file_size = os.path.getsize(file_path)
+        creation_date = os.path.getmtime(file_path)
+        creation_date = datetime.fromtimestamp(creation_date).strftime('%d-%m-%Y')
+        report = {
+            "name": report_name,
+            "size": file_size,
+            "creation_date": creation_date
+            }
+        response = json.dumps(report, indent=4)
         return HttpResponse(response, content_type="application/json")
 
         
