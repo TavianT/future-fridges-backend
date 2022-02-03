@@ -237,6 +237,8 @@ class ActivityLogController():
         directory = os.fsencode(ActivityLog.LOG_PATH)
         for file in os.listdir(directory):
             filename = os.fsdecode(file)
+            if filename == "test_log.txt":
+                continue
             file_path = os.path.join(ActivityLog.LOG_PATH, filename)
             creation_date = datetime.fromtimestamp(os.path.getmtime(file_path))
             #Check to see if logs are from within the last week
