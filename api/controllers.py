@@ -1,4 +1,5 @@
-from django.http.response import JsonResponse
+from email.mime import application
+from django.http.response import HttpResponse, JsonResponse
 from rest_framework import status
 
 from django.db.utils import OperationalError
@@ -164,8 +165,8 @@ class ReportController():
                     "creation_date": creation_date
                 }
                 all_report_info.append(report_info)
-
-        return JsonResponse(all_report_info, content_type="application/json")
+        all_report_info = json.dumps({'reports_info': all_report_info}, indent=4)
+        return HttpResponse(all_report_info, content_type="application/json")
     
     def getNewReport():
         return HealthAndSafetyReport.generateReport()
@@ -174,7 +175,7 @@ class ReportController():
         file_path = os.path.join("reports/", filename)
         if os.path.isfile(file_path):
             with open(file_path, 'rb') as fh:
-                response = JsonResponse(fh.read(), content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                response = HttpResponse(fh.read(), content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
             return response
         else:
@@ -274,15 +275,15 @@ class ActivityLogController():
                     "creation_date": creation_date
                 }
                 logs.append(log_info)
-        
-        return JsonResponse(logs, content_type="application/json")
+        logs = json.dumps({'logs': logs}, indent=4)
+        return HttpResponse(logs, content_type="application/json")
 
     def downloadLog(filename):
         #read in contents of the log file and return as a text file TODO: see if filetype needs changing
         file_path = os.path.join(ActivityLog.LOG_PATH, filename)
         if os.path.isfile(file_path):
             with open(file_path, 'r') as fh:
-                response = JsonResponse(fh.read(), content_type = "text/plain")
+                response = HttpResponse(fh.read(), content_type = "text/plain")
             response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
             return response
         else:
@@ -304,12 +305,12 @@ class NotificationController():
             response = {
                 "error": "notification may already have been deleted"
             }
-            return JsonResponse(response, status=status.HTTP_404_NOT_FOUND)
+            return Response(response, status=status.HTTP_404_NOT_FOUND)
         success = notification.delete()
         response = {}
         if success:
             response["success"] = "deleted notification successfully"
-            return JsonResponse(response)
+            return Response(response)
         else:
             response["error"] = "error deleting notification"
-            return JsonResponse(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
