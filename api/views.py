@@ -1,6 +1,6 @@
 import re
 import threading
-from django.http.response import HttpResponse, JsonResponse
+from django.http.response import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -27,15 +27,17 @@ def userLogin(request):
         serializer = UserSerializer(user, many=False)
         return JsonResponse(serializer.data)
     else:
-        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED) #return 401
-    return HttpResponse(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        response = {
+            "error": "invalid email address or password"
+        }
+        return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED) #return 401
 
 #Logs the user out and clears instance
 @csrf_exempt
 @require_http_methods(["GET"])
 def userLogout(request):
     logout(request)
-    return HttpResponse(status=status.HTTP_200_OK)
+    return JsonResponse(status=status.HTTP_200_OK)
 
 
 '''User endpoint functions'''
@@ -141,7 +143,10 @@ def unlockDoor(request):
                 t = threading.Thread(target=DoorController.autoLockDoor,args=[DoorController.FRONT_DOOR], daemon=True)
                 t.start()
         return response
-    return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+    response = {
+        "error": "You do not have access to the fridge, please speak to head chef or system administrator"
+    }
+    return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
 def lockDoor(request):
@@ -151,7 +156,10 @@ def lockDoor(request):
             return DoorController.lockBackDoor()
         else:
             return DoorController.lockFrontDoor()
-    return HttpResponse(status=status.HTTP_403_FORBIDDEN)
+    response = {
+        "error": "You do not have access to the fridge, please speak to head chef or system administrator"
+    }
+    return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['GET'])
 def doorLockStatus(request):
@@ -170,13 +178,19 @@ def returnLog(request, filename):
 @api_view(['GET'])
 def allNotifications(request):
     if request.user.id == None or request.user.role != 'HC':
-        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+        response = {
+            "error": "You do not have access to notifications, if this is wrong please contact system admin"
+        }
+        return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
     return NotificationController.getAllNotifications(request)
 
 @api_view(['DELETE'])
 def deleteNotification(request, pk):
     if request.user.id == None or request.user.role != 'HC':
-        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+        response = {
+            "error": "You are not authorised to delete notifications, if this is wrong please contact system admin"
+        }
+        return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
     return NotificationController.deleteNotification(request, pk)
     
     

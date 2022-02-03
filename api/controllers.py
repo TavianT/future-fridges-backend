@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse, JsonResponse
+from django.http.response import JsonResponse
 from rest_framework import status
 
 from django.db.utils import OperationalError
@@ -29,10 +29,16 @@ class UserController():
         try:
             user = User.objects.get(id=pk)
         except User.DoesNotExist: #check if the user exists
-            return HttpResponse(status=status.HTTP_404_NOT_FOUND) # Return 404
+            response = {
+                "error": "user does not exist, please update user list for correct list of users"
+            }
+            return JsonResponse(response, status=status.HTTP_404_NOT_FOUND) # Return 404
         # Check to see if user is admin i.e. superuser
         if user.is_superuser == True:
-            return HttpResponse(status=status.HTTP_403_FORBIDDEN) # Return 403
+            response = {
+                "error": "This user is an admin, you cannot change their information"
+            }
+            return JsonResponse(status=status.HTTP_403_FORBIDDEN) # Return 403
         return None
 
     #get a single user from a primary key
@@ -70,7 +76,10 @@ class FridgeContentController():
         try:
             content = FridgeContent.objects.get(id=pk)
         except FridgeContent.DoesNotExist:
-            return HttpResponse(status=status.HTTP_404_NOT_FOUND) # Return 404
+            response = {
+                "error": "fridge content does not exist, please update list of fridge content"
+            }
+            return JsonResponse(response, status=status.HTTP_404_NOT_FOUND) # Return 404
         return None
 
     def createFridgeContent(request):
@@ -90,7 +99,7 @@ class FridgeContentController():
         try:
             content = FridgeContent.objects.get(id=pk)
         except FridgeContent.DoesNotExist:
-            return HttpResponse(status=status.HTTP_404_NOT_FOUND) # Return 404
+            return JsonResponse(status=status.HTTP_404_NOT_FOUND) # Return 404
         old_quantity = content.current_quantity
         last_inserted_by = request.user.id
         print(request.data["current_quantity"])
@@ -106,7 +115,6 @@ class FridgeContentController():
             t2 = threading.Thread(target=create_low_quantity_notification, args=[content], daemon=True)
             t2.start()
             return Response(serializer.data) #TODO: return current quantity
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -124,7 +132,10 @@ class ItemController():
             serializer = ItemSerializer(item, many=False)
             return Response(serializer.data)
         except Item.DoesNotExist:
-            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+            response = {
+                "error": "The item you have scanned does not exist within the system, it will need to be added manually"
+            }
+            return JsonResponse(response, status=status.HTTP_404_NOT_FOUND)
     #create item from request
     def createItem(request):
         serializer = ItemSerializer(data=request.data)
@@ -153,9 +164,8 @@ class ReportController():
                     "creation_date": creation_date
                 }
                 all_report_info.append(report_info)
-        #convert all_report_info into json array object
-        all_report_info = json.dumps({'reports_info': all_report_info}, indent=4)
-        return HttpResponse(all_report_info, content_type="application/json")
+
+        return JsonResponse(all_report_info, content_type="application/json")
     
     def getNewReport():
         return HealthAndSafetyReport.generateReport()
@@ -164,11 +174,14 @@ class ReportController():
         file_path = os.path.join("reports/", filename)
         if os.path.isfile(file_path):
             with open(file_path, 'rb') as fh:
-                response = HttpResponse(fh.read(), content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                response = JsonResponse(fh.read(), content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
             return response
         else:
-            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+            response = {
+                "error": "report does not exist or has been deleted, please refresh report page or contact system admin"
+            }
+            return JsonResponse(response, status=status.HTTP_404_NOT_FOUND)
 
 class DoorController():
     FRONT_DOOR = "Front Door"
@@ -204,26 +217,38 @@ class DoorController():
         back_door_locked = DoorController.getDoorStatus(DoorController.BACK_DOOR)
         if front_door_locked and back_door_locked:
             return DoorController.setDoorStatus(DoorController.FRONT_DOOR, False)
-        return HttpResponse(status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
+        response = {
+            "error": "either front door is already unlocked or back door is unlocked, please refresh page to see."
+        }
+        return JsonResponse(response, status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
 
     def unlockBackDoor():
         front_door_locked = DoorController.getDoorStatus(DoorController.FRONT_DOOR)
         back_door_locked = DoorController.getDoorStatus(DoorController.BACK_DOOR)
         if front_door_locked and back_door_locked:
            return DoorController.setDoorStatus(DoorController.BACK_DOOR, False)
-        return HttpResponse(status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
+        response = {
+            "error": "either front door is already unlocked or back door is unlocked, please refresh page to see."
+        }
+        return JsonResponse(status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
 
     def lockFrontDoor():
         front_door_locked = DoorController.getDoorStatus(DoorController.FRONT_DOOR)
         if not front_door_locked:
             return DoorController.setDoorStatus(DoorController.FRONT_DOOR, True)
-        return HttpResponse(status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
+        response = {
+            "error": "front door is already locked, please refresh page to see."
+        }
+        return JsonResponse(response, status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
 
     def lockBackDoor():
         back_door_locked = DoorController.getDoorStatus(DoorController.BACK_DOOR)
         if not back_door_locked:
             return DoorController.setDoorStatus(DoorController.BACK_DOOR, True)
-        return HttpResponse(status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
+        response = {
+            "error": "front door is already locked, please refresh page to see."
+        }
+        return JsonResponse(response, status=status.HTTP_403_FORBIDDEN) #TODO: Check if right error code
 
     def returnAllDoorStatus(request):
         doors = Door.objects.all()
@@ -250,19 +275,21 @@ class ActivityLogController():
                 }
                 logs.append(log_info)
         
-        logs = json.dumps({'logs': logs}, indent=4)
-        return HttpResponse(logs, content_type="application/json")
+        return JsonResponse(logs, content_type="application/json")
 
     def downloadLog(filename):
         #read in contents of the log file and return as a text file TODO: see if filetype needs changing
         file_path = os.path.join(ActivityLog.LOG_PATH, filename)
         if os.path.isfile(file_path):
             with open(file_path, 'r') as fh:
-                response = HttpResponse(fh.read(), content_type = "text/plain")
+                response = JsonResponse(fh.read(), content_type = "text/plain")
             response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
             return response
         else:
-            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+            response = {
+                "error": "log has been deleted or does not exist, please refresh log page or contact system admin"
+            }
+            return JsonResponse(response, status=status.HTTP_404_NOT_FOUND)
 
 class NotificationController():
     def getAllNotifications(request):
@@ -274,12 +301,15 @@ class NotificationController():
         try:
             notification = Notification.objects.get(id=pk)
         except Notification.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            response = {
+                "error": "notification may already have been deleted"
+            }
+            return JsonResponse(response, status=status.HTTP_404_NOT_FOUND)
         success = notification.delete()
-        data = {}
+        response = {}
         if success:
-            data["success"] = "deleted notification successfully"
-            return Response(data)
+            response["success"] = "deleted notification successfully"
+            return JsonResponse(response)
         else:
-            data["error"] = "error deleting notification"
-            return Response(data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            response["error"] = "error deleting notification"
+            return JsonResponse(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
