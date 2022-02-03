@@ -49,6 +49,7 @@ class Reorder():
                     )
                     print(f'success = {success}')
                     #TODO: send notification if successful
+                content_to_reorder.delete()
                 sleep(86400) # 1 Day 
                     
                             

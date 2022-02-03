@@ -23,7 +23,7 @@ def create_expiring_items_notification():
         three_days_from_now = datetime.now() + timedelta(days=3)
         aware_date = make_aware(three_days_from_now)
         #Get all items in fridge expiring within 3 days
-        fridge_contents = FridgeContent.objects.all().filter(expiration_date__lt=aware_date)
+        fridge_contents = FridgeContent.objects.all().filter(expiration_date__lt=aware_date).order_by('expiration_date')
         if fridge_contents.count() > 0:
             message = 'The following items have expired or will be expiring within the next 3 days:\n'
             for fridge_content in fridge_contents:
