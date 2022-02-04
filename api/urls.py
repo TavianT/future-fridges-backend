@@ -22,6 +22,7 @@ urlpatterns = [
     #path('fridge-content/<str:pk>/', views.singleFridgeContent, name='fridge_content'),
     path('create-fridge-content/', views.createFridgeContent, name='create-fridge-content'),
     path('update-fridge-content-quantity/<str:pk>/', views.updateContentQuantity, name='update-quantity'),
+    path('fridge-volume-percentage/', views.getVolumePercentage, name='volume-percentage'),
     #Report paths
     path('all-reports/', views.allReportsInfo, name='all-reports'),
     path('generate-report/', views.generateReport, name='generate-report'),

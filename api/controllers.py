@@ -64,11 +64,22 @@ class FridgeContentController():
         serializer = FridgeContentSerializer(fridge_contents, many=True)
         return Response(serializer.data)
 
-    def checkFridgeOverfill(new_volume):
+    def getCurrentFridgeVolumePercentage():
+        volumePercentage = (FridgeContentController.getCurrentFridgeVolume() / 400) * 100
+        response = {
+            "percentage": volumePercentage
+        }
+        return Response(response)
+
+    def getCurrentFridgeVolume():
         fridge_contents = FridgeContent.objects.all()
         current_volume = 0
         for content in fridge_contents:
             current_volume += content.item.weight * content.current_quantity
+        return current_volume
+
+    def checkFridgeOverfill(new_volume):
+        current_volume = FridgeContentController.getCurrentFridgeVolume()
         if current_volume + new_volume > 400:
             return True
         return False

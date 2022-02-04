@@ -89,7 +89,10 @@ def updateContentQuantity(request,pk):
     if error is None:
         return FridgeContentController.updateQuantity(request,pk)
     return error
-            
+
+@api_view(['GET'])
+def getVolumePercentage(request):
+    return FridgeContentController.getCurrentFridgeVolumePercentage()           
 
 '''Item functions'''
 @api_view(['GET'])
