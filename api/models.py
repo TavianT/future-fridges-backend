@@ -68,3 +68,18 @@ class Notification(models.Model):
     delivered = models.BooleanField(default=False)
     message = models.CharField(max_length=1024)
     creation_date = models.DateTimeField(auto_now_add=True)
+
+class OrderItem(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.FloatField(blank=False)
+
+    def __str__(self):
+        return f'{self.item}\n{self.quantity}'
+
+class Order(models.Model):
+    order_items = models.ManyToManyField(OrderItem)
+    delivery_driver = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'DD'})
+    delivered = models.BooleanField(default=False)
+
+    def items(self):
+        return ", ".join([items.item.name for items in self.order_items.all()])

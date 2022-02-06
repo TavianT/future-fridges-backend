@@ -37,6 +37,9 @@ urlpatterns = [
     #Notification paths
     path('notifications/', views.allNotifications, name='notifications'),
     path('delete-notification/<str:pk>/', views.deleteNotification, name='delete-notification'),
+    #Order paths
+    path('user-orders/<str:pk>', views.userOrders, name='user-orders'),
+
 ]
 
 #TODO: Every monday reorder empty items

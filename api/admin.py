@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .forms import CustomUserCreationForm, CustomUserChangeForm, ItemCreationForm, SupplierCreationForm
-from .models import Item, Supplier, User
+from .forms import CustomUserCreationForm, CustomUserChangeForm, ItemCreationForm, OrderCreationForm, OrderItemCreationForm, SupplierCreationForm
+from .models import Item, Order, OrderItem, Supplier, User
 
 
 class CustomUserAdmin(UserAdmin):
@@ -35,8 +35,20 @@ class SupplierAdmin(admin.ModelAdmin):
     search_fields = ('name','email')
     form = SupplierCreationForm
 
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('items', 'delivered')
+    search_fields = ('items',)
+    list_filter = ('delivered',)
+    form = OrderCreationForm
+
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('item', 'quantity')
+    form = OrderItemCreationForm
+
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Supplier, SupplierAdmin)
+admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderItem, OrderItemAdmin)
 
 

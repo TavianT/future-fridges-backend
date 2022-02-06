@@ -11,7 +11,7 @@ from api.notifications import create_low_quantity_notification
 
 from .reports import HealthAndSafetyReport
 from .serializers import UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer, NotificationSerializer
-from .models import Door, Notification, User,FridgeContent,Item
+from .models import Door, Notification, Order, User,FridgeContent,Item
 
 from datetime import date, datetime, timedelta
 from time import sleep
@@ -325,3 +325,20 @@ class NotificationController():
         else:
             response["error"] = "error deleting notification"
             return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class OrderController():
+    def getUserOrders(pk):
+        orders = Order.objects.filter(delivery_driver=pk)
+        order_list = []
+        for order in orders:
+            order_items = []
+            for order_item in order.order_items.all():
+                order_item_details = {
+                    "item": order_item.item.name,
+                    "quantity": order_item.quantity
+                }
+                order_items.append(order_item_details)
+            order_list.append(order_items)
+        
+        order_list = json.dumps({'orders': order_list}, indent=4)
+        return HttpResponse(order_list, content_type="application/json")

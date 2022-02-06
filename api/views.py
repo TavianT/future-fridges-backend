@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view
 
 from api.logging import ActivityLog
 from api.models import Item
-from .controllers import ActivityLogController, DoorController, NotificationController, ReportController, UserController, FridgeContentController, ItemController
+from .controllers import ActivityLogController, DoorController, NotificationController, OrderController, ReportController, UserController, FridgeContentController, ItemController
 from .serializers import UserSerializer
 
 '''Auth function'''
@@ -195,5 +195,23 @@ def deleteNotification(request, pk):
         }
         return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
     return NotificationController.deleteNotification(request, pk)
+
+@api_view(['GET'])
+def userOrders(request, pk):
+    if request.user.id == None or request.user.role != 'DD':
+        response = {
+            "error": "You are not authorised to view deliveries, if this is wrong please contact system admin"
+        }
+        return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
+    return OrderController.getUserOrders(pk)
+
+@api_view(['POST'])
+def orderItems(request):
+    if request.user.id == None or request.user.role != 'HC':
+        response = {
+            "error": "You do not have permission to order items, if this is wrong please contact system admin"
+        }
+        return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
+    
     
     

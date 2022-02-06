@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.forms import ModelForm, fields
-from .models import Supplier, User, Item
+from .models import Order, OrderItem, Supplier, User, Item
 
 class CustomUserCreationForm(UserCreationForm):
 
@@ -26,3 +26,13 @@ class SupplierCreationForm(ModelForm):
     class Meta:
         model = Supplier
         fields = '__all__'
+
+class OrderItemCreationForm(ModelForm):
+    class Meta:
+        model = OrderItem
+        fields = '__all__'
+
+class OrderCreationForm(ModelForm):
+    class Meta:
+        model = Order
+        fields = ['order_items', 'delivery_driver']
