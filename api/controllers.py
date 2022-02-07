@@ -330,6 +330,26 @@ class NotificationController():
             return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class OrderController():
+    def getAllOrders():
+        orders = Order.objects.all()
+        order_list = []
+        for order in orders:
+            order_dict = {}
+            order_dict['id'] = order.id
+            order_dict["delivered"] = order.delivered
+            order_items = []
+            for order_item in order.order_items.all():
+                order_item_details = {
+                    "item": order_item.item.name,
+                    "quantity": order_item.quantity
+                }
+                order_items.append(order_item_details)
+            order_dict['order_items'] = order_items
+            order_list.append(order_dict)
+        
+        order_list = json.dumps(order_list, indent=4)
+        return HttpResponse(order_list, content_type="application/json")
+
     def getUserOrders(pk):
         orders = Order.objects.filter(delivery_driver=pk)
         order_list = []

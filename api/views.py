@@ -205,6 +205,10 @@ def userOrders(request, pk):
         return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
     return OrderController.getUserOrders(pk)
 
+@api_view(['GET'])
+def allOrders():
+    return OrderController.getAllOrders()
+
 @api_view(['PUT'])
 def completeDelivery(request, pk):
     return OrderController.updateDelivered(pk)
