@@ -9,8 +9,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 from api.logging import ActivityLog
-from api.models import Item
-from .controllers import ActivityLogController, DoorController, NotificationController, OrderController, ReportController, UserController, FridgeContentController, ItemController
+from api.models import Item, Order
+from .controllers import ActivityLogController, DoorController, NotificationController, OrderController, ReportController, UserController, FridgeContentController, ItemController, OrderItemController
 from .serializers import UserSerializer
 
 '''Auth function'''
@@ -214,12 +214,16 @@ def completeDelivery(request, pk):
     return OrderController.updateDelivered(pk)
 
 @api_view(['POST'])
-def orderItems(request):
+def createOrderItem(request):
     if request.user.id == None or request.user.role != 'HC':
         response = {
-            "error": "You do not have permission to order items, if this is wrong please contact system admin"
+            "error": "You do not have permission to create order items, if this is wrong please contact system admin"
         }
         return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
+    return OrderItemController.createOrderItem(request)
     
+@api_view(['GET'])
+def allOrderItems(request):
+    return OrderItemController.getOrderItems()
     
     

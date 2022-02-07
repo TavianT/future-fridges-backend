@@ -10,8 +10,8 @@ from api.logging import ActivityLog
 from api.notifications import create_low_quantity_notification
 
 from .reports import HealthAndSafetyReport
-from .serializers import UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer, NotificationSerializer
-from .models import Door, Notification, Order, User,FridgeContent,Item
+from .serializers import OrderItemSerializer, UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer, NotificationSerializer
+from .models import Door, Notification, Order, OrderItem, User,FridgeContent,Item
 
 from datetime import date, datetime, timedelta
 from time import sleep
@@ -404,5 +404,18 @@ class OrderController():
             "success": "order delivered successfully"
         }
         return Response(response)
+
+class OrderItemController():
+    def createOrderItem(request):
+        serializer = OrderItemSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def getOrderItems(request):
+        order_items = OrderItem.objects.all()
+        serializer = OrderItemSerializer(order_items, many=True)
+        return Response(serializer.data)
 
         
