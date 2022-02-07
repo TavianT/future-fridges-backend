@@ -64,6 +64,9 @@ class FridgeContentController():
         serializer = FridgeContentSerializer(fridge_contents, many=True)
         return Response(serializer.data)
 
+    def getRecentlyAddedFridgeContent():
+        return FridgeContent.objects.filter(introduction_date=datetime.now())
+
     def getCurrentFridgeVolumePercentage():
         volumePercentage = (FridgeContentController.getCurrentFridgeVolume() / 400) * 100
         response = {
@@ -331,6 +334,9 @@ class OrderController():
         orders = Order.objects.filter(delivery_driver=pk)
         order_list = []
         for order in orders:
+            order_dict = {}
+            order_dict['id'] = order.id
+            order_dict["delivered"] = order.delivered
             order_items = []
             for order_item in order.order_items.all():
                 order_item_details = {
@@ -338,7 +344,45 @@ class OrderController():
                     "quantity": order_item.quantity
                 }
                 order_items.append(order_item_details)
-            order_list.append(order_items)
+            order_dict['order_items'] = order_items
+            order_list.append(order_dict)
         
-        order_list = json.dumps({'orders': order_list}, indent=4)
+        order_list = json.dumps(order_list, indent=4)
         return HttpResponse(order_list, content_type="application/json")
+
+    def updateDelivered(pk):
+        new_fridge_contents = FridgeContentController.getRecentlyAddedFridgeContent()
+        if new_fridge_contents == None:
+            response = {
+                "error": "Nothing has been added to the fridge today, please add items first"
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            order = Order.objects.get(id=pk)
+        except Order.DoesNotExist:
+            response = {
+                "error": "order does not exist, please update order list for correct list of orders"
+            }
+            return Response(response, status=status.HTTP_404_NOT_FOUND)
+
+        for order_item in order.order_items.all():
+            item_found = False
+            print(f'order item name: {order_item.item.name}')
+            for fridge_content in new_fridge_contents:
+                print(f'fridge content item name: {fridge_content.item.name}')
+                if order_item.item.name == fridge_content.item.name and order_item.quantity == fridge_content.default_quantity:
+                    item_found = True
+            if item_found == False:
+                response = {
+                    "error": f'{order_item.item.name} has not been added to the fridge, order cannot be completed'
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        order.delivered = True
+        order.save()
+        response = {
+            "success": "order delivered successfully"
+        }
+        return Response(response)
+
+        

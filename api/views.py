@@ -205,6 +205,10 @@ def userOrders(request, pk):
         return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
     return OrderController.getUserOrders(pk)
 
+@api_view(['PUT'])
+def completeDelivery(request, pk):
+    return OrderController.updateDelivered(pk)
+
 @api_view(['POST'])
 def orderItems(request):
     if request.user.id == None or request.user.role != 'HC':

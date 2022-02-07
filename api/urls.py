@@ -38,7 +38,8 @@ urlpatterns = [
     path('notifications/', views.allNotifications, name='notifications'),
     path('delete-notification/<str:pk>/', views.deleteNotification, name='delete-notification'),
     #Order paths
-    path('user-orders/<str:pk>', views.userOrders, name='user-orders'),
+    path('user-orders/<str:pk>/', views.userOrders, name='user-orders'),
+    path('complete-delivery/<str:pk>/', views.completeDelivery, name='complete-delivery'),
 
 ]
 
