@@ -10,7 +10,7 @@ from api.logging import ActivityLog
 from api.notifications import create_low_quantity_notification
 
 from .reports import HealthAndSafetyReport
-from .serializers import OrderItemSerializer, UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer, NotificationSerializer
+from .serializers import OrderItemSerializer, UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer, NotificationSerializer, OrderSerializer
 from .models import Door, Notification, Order, OrderItem, User,FridgeContent,Item
 
 from datetime import date, datetime, timedelta
@@ -330,6 +330,13 @@ class NotificationController():
             return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class OrderController():
+    def createOrder(request):
+        serializer = OrderSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def getAllOrders():
         orders = Order.objects.all()
         order_list = []

@@ -39,8 +39,11 @@ urlpatterns = [
     path('delete-notification/<str:pk>/', views.deleteNotification, name='delete-notification'),
     #Order paths
     path('user-orders/<str:pk>/', views.userOrders, name='user-orders'),
-    path('all-orders/', views.allOrders, name='user-orders'),
+    path('all-orders/', views.allOrders, name='all-orders'),
     path('complete-delivery/<str:pk>/', views.completeDelivery, name='complete-delivery'),
+    #Order Item paths
+    path('all-order-items/', views.allOrderItems, name='all-order-items'),
+    path('create-order-item/', views.createOrderItem, name='create-order-items'),
 
 ]
 

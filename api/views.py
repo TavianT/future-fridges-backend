@@ -7,6 +7,7 @@ from django.views.decorators.http import require_http_methods
 from rest_framework import status
 
 from rest_framework.decorators import api_view
+import api
 
 from api.logging import ActivityLog
 from api.models import Item, Order
@@ -212,6 +213,15 @@ def allOrders():
 @api_view(['PUT'])
 def completeDelivery(request, pk):
     return OrderController.updateDelivered(pk)
+
+@api_view(['POST'])
+def createOrder(request):
+    if request.user.id == None or request.user.role != 'HC':
+        response = {
+            "error": "You do not have permission to create orders, if this is wrong please contact system admin"
+        }
+        return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
+    return OrderController.createOrder(request)
 
 @api_view(['POST'])
 def createOrderItem(request):
