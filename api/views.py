@@ -1,6 +1,6 @@
 import re
 import threading
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -38,7 +38,7 @@ def userLogin(request):
 @require_http_methods(["GET"])
 def userLogout(request):
     logout(request)
-    return JsonResponse(status=status.HTTP_200_OK)
+    return HttpResponse(status=status.HTTP_200_OK)
 
 
 '''User endpoint functions'''
