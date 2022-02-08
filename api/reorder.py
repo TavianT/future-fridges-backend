@@ -1,6 +1,6 @@
 from datetime import date
 
-from api.models import FridgeContent
+from api.models import FridgeContent, Order, OrderItem, User
 from enum import Enum
 from time import sleep
 from constance import config
@@ -21,12 +21,25 @@ class Reorder():
     def run(reorder_date):
         while True:
             if date.today().weekday() == reorder_date: #if today is monday
+                order = Order.objects.create(delivery_driver=User.objects.get(role='DD'))
                 print("Reordering food")
                 content_to_reorder = FridgeContent.objects.all().filter(current_quantity__lte=0)
                 suppliers = []
                 for content in content_to_reorder:
                     if content.item.supplier not in suppliers:
                         suppliers.append(content.item.supplier)
+                    
+                    order_item_exists = OrderItem.objects.filter(item = content.item, quantity=content.default_quantity).exists()
+                    if order_item_exists:
+                        print(f'order item exists')
+                        order_item = OrderItem.objects.filter(item = content.item, quantity=content.default_quantity).first()
+                        order.order_items.add(order_item)
+                    else:
+                        order_item = OrderItem.objects.create(item = content.item, quantity=content.default_quantity)
+                        order_item.save()
+                        order.order_items.add(order_item)
+
+                order.save()
                 
                 for supplier in suppliers:
                     reorder_str = '' #TODO: Add business name
@@ -49,6 +62,7 @@ class Reorder():
                     )
                     print(f'success = {success}')
                     #TODO: send notification if successful
+                
                 content_to_reorder.delete()
                 sleep(86400) # 1 Day 
                     

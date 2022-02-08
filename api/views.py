@@ -7,10 +7,11 @@ from django.views.decorators.http import require_http_methods
 from rest_framework import status
 
 from rest_framework.decorators import api_view
+import api
 
 from api.logging import ActivityLog
-from api.models import Item
-from .controllers import ActivityLogController, DoorController, NotificationController, OrderController, ReportController, UserController, FridgeContentController, ItemController
+from api.models import Item, Order
+from .controllers import ActivityLogController, DoorController, NotificationController, OrderController, ReportController, UserController, FridgeContentController, ItemController, OrderItemController
 from .serializers import UserSerializer
 
 '''Auth function'''
@@ -205,17 +206,34 @@ def userOrders(request, pk):
         return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
     return OrderController.getUserOrders(pk)
 
+@api_view(['GET'])
+def allOrders(request):
+    return OrderController.getAllOrders()
+
 @api_view(['PUT'])
 def completeDelivery(request, pk):
     return OrderController.updateDelivered(pk)
 
 @api_view(['POST'])
-def orderItems(request):
+def createOrder(request):
     if request.user.id == None or request.user.role != 'HC':
         response = {
-            "error": "You do not have permission to order items, if this is wrong please contact system admin"
+            "error": "You do not have permission to create orders, if this is wrong please contact system admin"
         }
         return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
+    return OrderController.createOrder(request)
+
+@api_view(['POST'])
+def createOrderItem(request):
+    if request.user.id == None or request.user.role != 'HC':
+        response = {
+            "error": "You do not have permission to create order items, if this is wrong please contact system admin"
+        }
+        return JsonResponse(response, status=status.HTTP_401_UNAUTHORIZED)
+    return OrderItemController.createOrderItem(request)
     
+@api_view(['GET'])
+def allOrderItems(request):
+    return OrderItemController.getOrderItems()
     
     

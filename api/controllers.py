@@ -10,8 +10,8 @@ from api.logging import ActivityLog
 from api.notifications import create_low_quantity_notification
 
 from .reports import HealthAndSafetyReport
-from .serializers import UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer, NotificationSerializer
-from .models import Door, Notification, Order, User,FridgeContent,Item
+from .serializers import OrderItemSerializer, UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer, NotificationSerializer, OrderSerializer
+from .models import Door, Notification, Order, OrderItem, User,FridgeContent,Item
 
 from datetime import date, datetime, timedelta
 from time import sleep
@@ -330,6 +330,33 @@ class NotificationController():
             return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class OrderController():
+    def createOrder(request):
+        serializer = OrderSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def getAllOrders():
+        orders = Order.objects.all()
+        order_list = []
+        for order in orders:
+            order_dict = {}
+            order_dict['id'] = order.id
+            order_dict["delivered"] = order.delivered
+            order_items = []
+            for order_item in order.order_items.all():
+                order_item_details = {
+                    "item": order_item.item.name,
+                    "quantity": order_item.quantity
+                }
+                order_items.append(order_item_details)
+            order_dict['order_items'] = order_items
+            order_list.append(order_dict)
+        
+        order_list = json.dumps(order_list, indent=4)
+        return HttpResponse(order_list, content_type="application/json")
+
     def getUserOrders(pk):
         orders = Order.objects.filter(delivery_driver=pk)
         order_list = []
@@ -384,5 +411,18 @@ class OrderController():
             "success": "order delivered successfully"
         }
         return Response(response)
+
+class OrderItemController():
+    def createOrderItem(request):
+        serializer = OrderItemSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def getOrderItems(request):
+        order_items = OrderItem.objects.all()
+        serializer = OrderItemSerializer(order_items, many=True)
+        return Response(serializer.data)
 
         
