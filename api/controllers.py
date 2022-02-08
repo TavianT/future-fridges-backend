@@ -420,7 +420,7 @@ class OrderItemController():
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def getOrderItems(request):
+    def getOrderItems():
         order_items = OrderItem.objects.all()
         serializer = OrderItemSerializer(order_items, many=True)
         return Response(serializer.data)
