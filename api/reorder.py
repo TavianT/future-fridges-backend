@@ -31,11 +31,15 @@ class Reorder():
                     
                     order_item_exists = OrderItem.objects.filter(item = content.item, quantity=content.default_quantity).exists()
                     if order_item_exists:
-                        order_item = OrderItem.objects.get(item = content.item, quantity=content.default_quantity)
+                        print(f'order item exists')
+                        order_item = OrderItem.objects.filter(item = content.item, quantity=content.default_quantity).first()
                         order.order_items.add(order_item)
                     else:
                         order_item = OrderItem.objects.create(item = content.item, quantity=content.default_quantity)
+                        order_item.save()
                         order.order_items.add(order_item)
+
+                order.save()
                 
                 for supplier in suppliers:
                     reorder_str = '' #TODO: Add business name
@@ -59,7 +63,6 @@ class Reorder():
                     print(f'success = {success}')
                     #TODO: send notification if successful
                 
-                order.save()
                 content_to_reorder.delete()
                 sleep(86400) # 1 Day 
                     

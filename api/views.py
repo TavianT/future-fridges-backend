@@ -207,7 +207,7 @@ def userOrders(request, pk):
     return OrderController.getUserOrders(pk)
 
 @api_view(['GET'])
-def allOrders():
+def allOrders(request):
     return OrderController.getAllOrders()
 
 @api_view(['PUT'])
