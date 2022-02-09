@@ -64,6 +64,11 @@ class FridgeContentController():
         serializer = FridgeContentSerializer(fridge_contents, many=True)
         return Response(serializer.data)
 
+    def getRecentFridgeContent():
+        fridge_contents = FridgeContent.objects.all().order_by('-introduction_date')[:5]
+        serializer = FridgeContentSerializer(fridge_contents, many=True)
+        return Response(serializer.data)
+
     def getRecentlyAddedFridgeContent():
         return FridgeContent.objects.filter(introduction_date=datetime.now())
 
