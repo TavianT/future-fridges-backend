@@ -52,3 +52,19 @@ the log in for the admin page is:
 
 email address: `admin@admin.com`
 password: `admin`
+
+The log in for the users is:
+
+Head Chef:
+
+email: `testchef@gmail.com`
+
+Chef:
+
+email: `yaboi@yeahman.com`
+
+Delivery Driver:
+
+email: `toko@yami.com`
+
+password (for all users): `akashiseijuro`
