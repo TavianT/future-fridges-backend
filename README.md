@@ -46,4 +46,9 @@ The scripts provided should be ran in this order for the best result:
 
 ## Azure instructions
 
-The azure endpoint is `future-fridges.azurewebsites.net` for example to go to the admin page the the web address would be `future-fridges.azurewebsites.net/admin`
+The azure endpoint is `https://future-fridges.azurewebsites.net` for example to go to the admin page the the web address would be `https://future-fridges.azurewebsites.net/admin`
+
+the log in for the admin page is:
+
+email address: `admin@admin.com`
+password: `admin`
