@@ -17,7 +17,7 @@ class HealthAndSafetyReport():
         report_name = f'health_and_safety_report.{creation_datetime}.xlsx'
         #Check for expired items
         fridge_contents = FridgeContent.objects.all().filter(expiration_date__lt=aware_date).order_by('expiration_date')
-        workbook = xlsxwriter.Workbook(f'reports/{report_name}')
+        workbook = xlsxwriter.Workbook(f'reports/{report_name}', options={'remove_timezone': True})
         #Add format dd/mm/yy format to workboot
         date_format = workbook.add_format({'num_format': 'dd/mm/yy', 'align': 'left'})
         worksheet = workbook.add_worksheet()
