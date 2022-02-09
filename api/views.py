@@ -66,6 +66,10 @@ def singleUser(request, pk):
 def allFridgeContent(request):
     return FridgeContentController.getAllFridgeContent()
 
+@api_view(['GET'])
+def recentFridgeContent(request):
+    return FridgeContentController.getRecentFridgeContent()
+
 '''@api_view(['POST'])
 def singleFridgeContent(request,pk):
    # error = FridgeContentController.singleFridgeContentCreateCheck(pk) #
