@@ -26,8 +26,8 @@ SECRET_KEY = 'django-insecure-^r8*o)i$jlh7u900+#-b+q$ofdq(o5&a+3bl1y9-e5$d_lo_+a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://future-fridges.azurewebsites.net']
-CSRF_TRUSTED_ORIGINS=['https://future-fridges.azurewebsites.net']
+ALLOWED_HOSTS = ['future-fridges.azurewebsites.net']
+CSRF_TRUSTED_ORIGINS=['future-fridges.azurewebsites.net']
 
 # Application definition
 
