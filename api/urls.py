@@ -8,6 +8,7 @@ import threading
 urlpatterns = [
     #User paths
     path('users/', views.allUsers, name="users"),
+    path('delivery-drivers/', views.allDeliveryDrivers, name="delivery-drivers"),
     path('user/<str:pk>/', views.singleUser, name="user"),
     #Auth paths
     path('login/', views.userLogin, name='login'),
@@ -45,6 +46,7 @@ urlpatterns = [
     #Order Item paths
     path('all-order-items/', views.allOrderItems, name='all-order-items'),
     path('create-order-item/', views.createOrderItem, name='create-order-items'),
+    path('create-order/', views.createOrder, name='create-order'),
 
 ]
 

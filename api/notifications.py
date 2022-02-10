@@ -43,12 +43,15 @@ def send_notification_email(notification):
         email_list = []
         for recipient in notification.recipients.all():
             email_list.append(recipient.email)
-        send_mail(
-            subject='Future Fridges Notification',
-            message=notification.message,
-            from_email=config.BUSINESS_EMAIL_ADDRESS,
-            recipient_list=email_list,
-            auth_user=config.BUSINESS_EMAIL_ADDRESS,
-            auth_password=config.BUSINESS_EMAIL_PASSWORD
-        )
-        notification.delivered=True
+        try:
+            send_mail(
+                subject='Future Fridges Notification',
+                message=notification.message,
+                from_email=config.BUSINESS_EMAIL_ADDRESS,
+                recipient_list=email_list,
+                auth_user=config.BUSINESS_EMAIL_ADDRESS,
+                auth_password=config.BUSINESS_EMAIL_PASSWORD
+            )
+            notification.delivered=True
+        except Exception:
+            print("unable to send email")

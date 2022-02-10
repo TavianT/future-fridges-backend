@@ -59,6 +59,10 @@ def singleUser(request, pk):
             return UserController.updateSingleUser(request,pk)
     return error
 
+@api_view(['GET'])
+def allDeliveryDrivers(request):
+    return UserController.getDeliveryDrivers()
+
 '''Fridge Content functions'''
 
 @api_view(['GET'])
@@ -69,13 +73,6 @@ def allFridgeContent(request):
 @api_view(['GET'])
 def recentFridgeContent(request):
     return FridgeContentController.getRecentFridgeContent()
-
-'''@api_view(['POST'])
-def singleFridgeContent(request,pk):
-   # error = FridgeContentController.singleFridgeContentCreateCheck(pk) #
-    #if error is None:  #commenting out for now
-    if request.method == 'POST':
-        return FridgeContentController.createFridgeContent(request)'''
 
 @api_view(['POST'])
 def createFridgeContent(request):
@@ -107,12 +104,6 @@ def allItems(request):
 @api_view(['GET'])
 def singleItemFromBarcode(request, barcode):
     return ItemController.getItemFromBarcode(barcode)
-
-'''@api_view(['GET','POST'])
-def singleItem(request,pk):
-    if request.method == 'POST':
-        #create new item
-        return ItemController.createItem(request) '''
 
 @api_view(['POST'])
 def createItem(request):
