@@ -13,7 +13,7 @@ from .reports import HealthAndSafetyReport
 from .serializers import OrderItemSerializer, UserSerializer,FridgeContentSerializer,ItemSerializer, DoorSerializer, NotificationSerializer, OrderSerializer
 from .models import Door, Notification, Order, OrderItem, User,FridgeContent,Item
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, time
 from time import sleep
 
 import os
@@ -65,7 +65,11 @@ class FridgeContentController():
         return Response(serializer.data)
 
     def getRecentlyAddedFridgeContent():
-        return FridgeContent.objects.filter(introduction_date=datetime.now())
+        today = datetime.now().date()
+        tomorrow = today + timedelta(1)
+        today_start = datetime.combine(today, time())
+        today_end = datetime.combine(tomorrow, time())
+        return FridgeContent.objects.filter(introduction_date__gte=today_start)
 
     def getCurrentFridgeVolumePercentage():
         volumePercentage = (FridgeContentController.getCurrentFridgeVolume() / 400) * 100
