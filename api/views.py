@@ -1,6 +1,6 @@
 import re
 import threading
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -38,7 +38,7 @@ def userLogin(request):
 @require_http_methods(["GET"])
 def userLogout(request):
     logout(request)
-    return JsonResponse(status=status.HTTP_200_OK)
+    return HttpResponse(status=status.HTTP_200_OK)
 
 
 '''User endpoint functions'''
@@ -59,6 +59,10 @@ def singleUser(request, pk):
             return UserController.updateSingleUser(request,pk)
     return error
 
+@api_view(['GET'])
+def allDeliveryDrivers(request):
+    return UserController.getDeliveryDrivers()
+
 '''Fridge Content functions'''
 
 @api_view(['GET'])
@@ -66,12 +70,9 @@ def singleUser(request, pk):
 def allFridgeContent(request):
     return FridgeContentController.getAllFridgeContent()
 
-'''@api_view(['POST'])
-def singleFridgeContent(request,pk):
-   # error = FridgeContentController.singleFridgeContentCreateCheck(pk) #
-    #if error is None:  #commenting out for now
-    if request.method == 'POST':
-        return FridgeContentController.createFridgeContent(request)'''
+@api_view(['GET'])
+def recentFridgeContent(request):
+    return FridgeContentController.getRecentFridgeContent()
 
 @api_view(['POST'])
 def createFridgeContent(request):
@@ -103,12 +104,6 @@ def allItems(request):
 @api_view(['GET'])
 def singleItemFromBarcode(request, barcode):
     return ItemController.getItemFromBarcode(barcode)
-
-'''@api_view(['GET','POST'])
-def singleItem(request,pk):
-    if request.method == 'POST':
-        #create new item
-        return ItemController.createItem(request) '''
 
 @api_view(['POST'])
 def createItem(request):

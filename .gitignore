@@ -139,3 +139,6 @@ logs/activity*
 
 #SonarQube
 .scannerwork
+
+#vscode
+.vscode

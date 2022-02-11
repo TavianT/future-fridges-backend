@@ -19,12 +19,25 @@ from time import sleep
 import os
 import json
 import threading
+import random
 
 class UserController():
     def getAllUsers():
         users = User.objects.all().exclude(is_superuser=True) #exclude superusers (admins) in from the query
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
+
+    def getDeliveryDrivers():
+        users = User.objects.filter(role='DD')
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+    
+    def getRandomDeliveryDriver():
+        ids = User.objects.filter(role='DD').values_list('id', flat=True)
+        print(ids)
+        random_id = random.choice(ids)
+        return random_id
+
     def singleUserCheck(pk):
         # Check to see if user exists
         try:
@@ -61,6 +74,11 @@ class FridgeContentController():
     #returns all fridge content
     def getAllFridgeContent():
         fridge_contents = FridgeContent.objects.all()
+        serializer = FridgeContentSerializer(fridge_contents, many=True)
+        return Response(serializer.data)
+
+    def getRecentFridgeContent():
+        fridge_contents = FridgeContent.objects.all().order_by('-introduction_date')[:5]
         serializer = FridgeContentSerializer(fridge_contents, many=True)
         return Response(serializer.data)
 
@@ -335,7 +353,13 @@ class NotificationController():
 
 class OrderController():
     def createOrder(request):
-        serializer = OrderSerializer(data=request.data)
+        order_items = request.data['order_items']
+        delivery_driver = UserController.getRandomDeliveryDriver()
+        data = {
+            "order_items": order_items,
+            "delivery_driver": delivery_driver
+        }
+        serializer = OrderSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

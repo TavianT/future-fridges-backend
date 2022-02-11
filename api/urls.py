@@ -8,6 +8,7 @@ import threading
 urlpatterns = [
     #User paths
     path('users/', views.allUsers, name="users"),
+    path('delivery-drivers/', views.allDeliveryDrivers, name="delivery-drivers"),
     path('user/<str:pk>/', views.singleUser, name="user"),
     #Auth paths
     path('login/', views.userLogin, name='login'),
@@ -23,6 +24,7 @@ urlpatterns = [
     path('create-fridge-content/', views.createFridgeContent, name='create-fridge-content'),
     path('update-fridge-content-quantity/<str:pk>/', views.updateContentQuantity, name='update-quantity'),
     path('fridge-volume-percentage/', views.getVolumePercentage, name='volume-percentage'),
+    path('recent-fridge-contents/', views.recentFridgeContent, name='recent-fridge-contents'),
     #Report paths
     path('all-reports/', views.allReportsInfo, name='all-reports'),
     path('generate-report/', views.generateReport, name='generate-report'),
@@ -44,6 +46,7 @@ urlpatterns = [
     #Order Item paths
     path('all-order-items/', views.allOrderItems, name='all-order-items'),
     path('create-order-item/', views.createOrderItem, name='create-order-items'),
+    path('create-order/', views.createOrder, name='create-order'),
 
 ]
 
